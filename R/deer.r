@@ -12,7 +12,7 @@
 #' @references
 #'  Long, J.A., Nelson, T.A., Webb, S.L., Gee, K.L. (2014) A critical examination
 #'  of indices of dynamic interaction for wildlife telemetry studies. \emph{Journal 
-#'  of Animal Ecology}, DOI: 10.1111/1365-2656.12198. 18p. \cr \cr
+#'  of Animal Ecology}, \bold{83}: 1216-1233.\cr \cr
 #'  Webb, S.L., Gee, K.L., Demarais, S., Strickland, B.K., DeYoung, R.W.
 #'  (2009) Efficacy of a 15-strand high-tensile electric fence to control
 #'  white-tailed deer movements. \emph{Wildlife Biology in Practice}, \bold{5}, 45-57.\cr\cr

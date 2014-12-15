@@ -49,7 +49,7 @@ on home ranges and social affiliations of female white-tailed deer.
 \emph{Journal of Wildlife Management}, \bold{60}: 899-909.
 }
 \seealso{
-GetSimultaneous, DI
+GetSimultaneous, DI, contacts
 }
 \keyword{indices}
 

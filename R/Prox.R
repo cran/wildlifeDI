@@ -33,7 +33,7 @@
 #' \emph{Journal of Wildlife Management}, \bold{60}: 899-909.
 #'
 #' @keywords indices
-#' @seealso GetSimultaneous, DI
+#' @seealso GetSimultaneous, DI, contacts
 #' @examples
 #' data(deer)
 #' deer37 <- deer[1]

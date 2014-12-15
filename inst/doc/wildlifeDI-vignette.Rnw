@@ -9,7 +9,7 @@
 \usepackage{amssymb,amsmath}                   %AMS packages for math equations
 
 % \VignetteEngine{knitr} 
-% \VignetteIndexEntry{wildlifeDI - Vignette}
+% \VignetteIndexEntry{Analysis of dynamic interactions in wildlife}
 
 \begin{document}
 
@@ -18,17 +18,16 @@
 %@
 
 
-\title{\texttt{wildlifeDI} -- A Suite of R Tools for Exploring Dynamic Interaction Patterns in Wildlife
-Telemetry Data \\ \textit{Version 0.1}}
+\title{\texttt{wildlifeDI}: Analysis of Dynamic Interaction Patterns from Wildlife Tracking Data
+\\ \textit{Version 0.2}}
 \author{Jed A. Long\footnote{
 \textbf{Contact:} \newline
 \indent Jed A. Long \newline
-\indent Centre for GeoInformatics \newline
 \indent Department of Geography \& Sustainable Development \newline
 \indent University of St Andrews \newline
 \indent email: jed.long$@$st-andrews.ac.uk \newline
 \indent tel: +44 01334 464024 \newline
-\indent web:  www.st-andrews.ac.uk/geoinformatics
+\indent web: http://jedalong.github.io/
 }}
 \date{\today}
 %===============================================================================
@@ -60,7 +59,7 @@ Finally, please notify me if you find a bug/fix that needs to be looked at!
 
 \subsection{Some Terminology}
 Before we go any further it is imperative that we clarify some terminology that will
-be used in the following explanations.
+be used in the following explanations (Table 1).
 \begin{table}[ht]
 \caption{Terminology used in describing dynamic interaction methods.}
 \centering
@@ -99,12 +98,21 @@ deer38 <- deer[2]
 deer38
 @
 
+\subsection{Checking for temporal overlap}
+Before embarking on analysis of dynamic interaction, it is worthwhile to check whether two telemetry datasets overlap temporally. This can be easily done using the \texttt{checkTO} funciton. The function tells us first if the two datasets overlap temporally (a necessary condition for spatial-temporal interaction), then it gives us the timings of the start and end of the overlap period.
+
+<<>>=
+checkTO(deer37,deer38)
+@
+
+Here we can clearly see that the two deer overlap for essentially the whole period, as these data were hand picked for this purpose. However, this will not always be the case, and thus checkTO can be a useful function for identifying if, and when, two telemetry datasets overlap temporally.
+
 \subsection{Static interaction analysis}
-Static interaction can be defined broadly as the spatial overlap of two individual home ranges,or more recently, as the volume of intersection between two individual utilization distributions (Macdonald et al. 1980, Millspaugh et al. 2004). It is often useful to examine static interaction to investigate the potential for dynamic interactions to exist. Here we investigate the simpler case of proportion of home range overlap, to test for the potential fordynamic interaction between \texttt{deer37} and \texttt{deer38}. The proportion of overlap is calculated simply as:
+Static interaction can be defined broadly as the spatial overlap of two individual home ranges, or more recently, as the volume of intersection between two individual utilization distributions (Macdonald et al. 1980, Millspaugh et al. 2004). It is often useful to examine static interaction to investigate the potential for dynamic interactions to exist. Here we investigate the simpler case of proportion of home range overlap, to test for the potential fordynamic interaction between \texttt{deer37} and \texttt{deer38}. The proportion of overlap is calculated simply as:
 \[
 \text{SI} = \frac{HR_\alpha \cap HR_\beta}{HR_\alpha \cup HR_\beta}
 \]
-where \textit{HR} refers to the corresponding home range area. To compute the individual home ranges, the 95\% volume contour of the kernel density estimate will be used, as this is easily computed in the \texttt{adehabitatHR} package. To compute these metrics we will use the\texttt{adehabitatHR} and \texttt{rgeos} packages, so please make sure they are installed on your machine.
+where \textit{HR} refers to the corresponding home range area. To compute the individual home ranges, the 95\% volume contour of the kernel density estimate will be used, as this is easily computed in the \texttt{adehabitatHR} package. To compute these metrics we will use the \texttt{adehabitatHR} and \texttt{rgeos} packages, so please make sure they are installed on your machine.
 
 <<SIFig>>=
 library(adehabitatHR)
@@ -132,7 +140,7 @@ gArea(gIntersection(hr37,hr38))/gArea(gUnion(hr37,hr38))
 Here we can see there is substantial overlap in home ranges between these two individuals, and thus some would suggest that this may be evidence of likely dynamic interaction, which is what we will explore further. NOTE: The home ranges we have computed here (saved as the objects \texttt{hr37} and \texttt{hr38}) will be used in later analysis.
 
 \subsection{Obtaining Simultaneous Fixes - T$_{\alpha\beta}$}
-Measurement of dynamic interaction often requires the identification of those fixes that are deemed to be simultaneous in time (T$_{\alpha\beta}$) based on some time tolerance threshold - $t_c$. As this is rarely the case in real datasets,the function \texttt{GetSimultaneous} was deveoped to extract simultaneous fixes from two movement datasets. The tolerance parameter ($t_c$) can be used to allow the times to deviate slightly and still be considered simultaneous. Note that that \texttt{ltraj} objects, despite displaying date-time formats, measure times in seconds and thus the $t_c$ argument is given in seconds. The documentation for the \texttt{GetSimultaneous} function tells us to pass in two trajectories, and a \texttt{tc} argument. In this example we will use 7.5 minutes as $t_c$, which is 1/2 the sampling interval (which is generally a good starting point) of 15 minutes. This means that any two fixes that are within 7.5 minutes of eachother are deemed simultaneous. The result of the \texttt{GetSimultaneous} function is a list with two \texttt{ltraj} objects which can be extracted.
+Measurement of dynamic interaction often requires the identification of those fixes that are deemed to be simultaneous in time (T$_{\alpha\beta}$) based on some time tolerance threshold - $t_c$. As this is rarely the case in real datasets, the function \texttt{GetSimultaneous} was deveoped to extract simultaneous fixes from two movement datasets. The tolerance parameter ($t_c$) can be used to allow the times to deviate slightly and still be considered simultaneous. Note that that \texttt{ltraj} objects, despite displaying date-time formats, measure times in seconds and thus the $t_c$ argument is given in seconds. The documentation for the \texttt{GetSimultaneous} function tells us to pass in two trajectories, and a \texttt{tc} argument. In this example we will use 7.5 minutes as $t_c$, which is 1/2 the sampling interval (which is generally a good starting point) of 15 minutes. This means that any two fixes that are within 7.5 minutes of eachother are deemed simultaneous. The result of the \texttt{GetSimultaneous} function is a list with two \texttt{ltraj} objects which can be extracted.
 
 <<>>=
 deers <- GetSimultaneous(deer37,deer38,tc=7.5*60)
@@ -167,7 +175,21 @@ plot(prox.df$date,prox.df$prox,type="l")
 @
 
 %Interpretation
-We can use this graphic to examine the local-scale variation in proximity between the two deer. For instance, it appears the two deer remained close together from mid-day Thursday until around Sunday morning. Examining spatial and temporal variation in Prox can be useful for exploring spatial and/or temporal covariates associated with attraction behaviour.
+We can use this graphic to examine the local-scale variation in proximity between the two deer. For instance, it appears the two deer remained close together from mid-day Thursday until around Sunday morning. Examining temporal variation in Prox can be useful for exploring temporal covariates associated with attraction behaviour.
+
+\subsection{Mapping contacts}
+
+Given telemetry data, of interest is to create a map of \textit{where} contacts occur across the landscape. The most straightforward way to do this is to first identify which fixes are deemed a contact (i.e., as with \texttt{Prox}), then to map these points. The function \texttt{contacts} facilitates mapping of contacts, where a contact point is defined as the mid-point of the straight-line between two fixes that are determined to be a contact (based on thresholds \texttt{dc} and \texttt{tc}). 
+
+The contacts function returns a \texttt{SpatialPointsDataFrame} which can be used to map contact locations. For more information on these types of 'Spatial' obects see \texttt{help(sp)}. 
+
+<<>>=
+spts <- contacts(deer37,deer38,tc=7.5*60, dc=50)
+plot(spts)
+@
+
+%Interpretation
+Here we can see that there are some hot-spots (or clusters) where contacts appear on the landscape. It is unknown if these hot-spots are \emph{significant}, or unexpected, based on the patterns of the original telemetry data. Mapping contacts is still an understudied area of dynamic interaction analysis and more research is needed into how best to use and interpret maps of contacts. Further, research into how contact data can be linked to underlying environmental variables is warranted.
 
 \subsection{Ca - Coefficent of association (Cole 1949, Bauman 1998)}
 The coefficient of association (Ca) statistic measures the proportion of fixes that are ST$_{\alpha\beta}$ based on the given distance threshold $d_c$. It is simply calculated as:
@@ -176,7 +198,7 @@ The coefficient of association (Ca) statistic measures the proportion of fixes t
 \]
 \noindent where AB is the number of ST$_{\alpha\beta}$ fixes, and A and B are the number of fixes in $\alpha$ and $\beta$ respectively. It has been suggested in the literature that a cut-off of 0.5 can be used to identify attraction (Ca $> 0.5$) and avoidance (Ca $< 0.5$).
 
-The function \texttt{Ca} can be used to implement the Ca statistic in R. Again, we use threshold values of $t_c$ = 7.5 minutes and $d_c$ = 50 meters
+The function \texttt{Ca} can be used to implement the Ca statistic in R. Again, we use threshold values of $t_c$ = 7.5 minutes and $d_c$ = 50 meters.
 
 <<>>=
 Ca(deer37, deer38, tc=7.5*60, dc=50)
@@ -321,15 +343,38 @@ plot(di.df$date, di.df$smooth,type="l")
 
 From the smoothed time-series plot we can again see a similar pattern as with Prox, wherby cohesive movement behaviour is strongest between mid-day Thursday into early Sunday morning. Within this period there are variations in the cohesive movement behaviour, perhaps related to the diurnal cyclical behaviour associated with deer movements. In situations where periods of cohesive movement are interspersed with random movement, the time-series plot of di (and/or smoothed di) can provide useful insight as to when and/or where this behaviour occurs.
 
+\subsection{IAB - Interaction Statistic (Benhamou et al. 2014)}
+The IAB statistic takes an alternative view on testing for dynamic interaction from telemetry data. It computes an index (IAB) analogous to the Bhattacharyya coefficient between the two animals. 
+\[
+\text{IAB}(t) = exp\left[ -0.5(D_{AB}(t)/\Delta)^2 \right]
+\]
+where $D_{AB}$ is the distance between two simultaneous ($T_{\alpha\beta}$) telemetry fixes. Instead of using a critical distance threshold, the IAB statistic uses a parameter ($\Delta$) that represents the point maximum slope of the distance effect function which measures the potential influence domain between the two animals. In the R function $\Delta$ is simply the \texttt{dc} parameter. Further, a novel simulation procedure is proposed for generating the expectation against which a statistical test is based. That is, a wrapped shifting method is used to maintain the serial correllation structure implicit to the movement data. At each shift, a sample statistic (termed MAB) is computed to generate the distribution of values for the test statistic. 
+
+Here I have also implemented a local version of the analysis, so that the temporal variation in the IAB index can be graphed through time. 
+
+<<>>=
+IAB(deer37, deer38, dc=50, tc=7.5*60)
+@
+
+%Interpretation
+Here we can see that the IAB test suggests significant attraction ($p = 0.0018$) and conversely no avoidance, which would be expected. The IAB statistic further corroborates evidence from the other indices that there is attraction between these two deer.
+
+<<>>=
+df <- IAB(deer37, deer38, dc=50, tc=7.5*60, local=TRUE)
+plot(df$date, df$Iab,type='l')
+@
+
+%Interpretation
+The local IAB analysis further corroborates the timing of interactive behavoiur observed using the local Prox analysis and the local di statistic. Here we can see that the strongest interactions occur from midday Thursday until Sunday morning. The shape of the local IAB graph is the opposite of that observed with Prox.
 
 \section{Summary}
-In this vignette I have demonstrated how a suite of newly developed tools for the R statistical environment can be used to investigate interactive behaviour in wildlife telemetry data. Many of these methods draw on functionality for deriving spatially proximal and temporally simultaneous fixes that are dependent on the critical thresholds $d_c$ and $t_c$. Thus, care must be taken to ensure the selection of these thresholds as biologically relevant and appropriate with ones dataset (e.g., related to the sampling interval). In this document I have attempted not to argue for or against the use of any of the statistics in different situations. Also, if you are aware of another method for measuring dynamic interaction behaviour feel free to contact me and I will do my best to implement  it as I see fit. Finally, thanks for taking the time to utilize these tools and I would appreciate any feedback and/or bugs identified.
+In this vignette I have demonstrated how the various methods implemented in the package \texttt{wildlifeDI} can be used to investigate interactive behaviour in wildlife telemetry data. Many of these methods draw on functionality for deriving spatially proximal and temporally simultaneous fixes that are dependent on the critical thresholds $d_c$ and $t_c$. Thus, care must be taken to ensure the selection of these thresholds as biologically relevant and appropriate with ones dataset (e.g., related to the sampling interval). In this document I have attempted not to argue for or against the use of any of the statistics in different situations. Also, if you are aware of another method for measuring dynamic interaction behaviour feel free to contact me and I will do my best to implement  it as I see fit. Finally, thanks for taking the time to utilize these tools and I would appreciate any feedback and/or bugs identified.
 \vspace{0.5in}
 
 \noindent\textbf{Citation Info:}
 \begin{itemize}
 \item[]
-Long, J.A. (2014) \texttt{wildlifeDI} -- A Suite of R Tools for Exploring Dynamic Interaction Patterns in Wildlife Telemetry Data. R Package Vignette. Version 0.1. 24p.
+Long, J.A. (2014) \texttt{wildlifeDI} -- A Suite of R Tools for Exploring Dynamic Interaction Patterns in Wildlife Telemetry Data. R Package Vignette. Version 0.2.
 \end{itemize}
 
 \section{References}
@@ -338,6 +383,9 @@ Long, J.A. (2014) \texttt{wildlifeDI} -- A Suite of R Tools for Exploring Dynami
 Atwood, T.C. and Weeks Jr., H.P. (2003) Spatial home-range overlap and temporal interaction in eastern coyotes: The influence of pair types and fragmentation. \textit{Canadian Journal of Zoology} \textbf{81}: 1589-1597.
 \item[]
 Bauman, P.J. (1998) The Wind Cave National Park elk herd: home ranges, seasonal movements, and alternative control methods. M.S. Thesis. South Dakota State University, Brookings, South Dakota, USA.
+\item[]
+Benhamou, S., Valeix, M., Chamaille-Jammes, S., Macdonald, D., Loveridge, A.J. (2014) Movement-based analysis
+of interactions in African lions. \textit{Animal Behaviour}, \textbf{90}: 171-180.
 \item[]
 Calenge, C. (2006) The package "adehabitat" for the R software: A tool for the analysis of space and habitat use by animals. \textit{Ecological Modelling}, \textbf{197}: 516-519.
 \item[]
@@ -353,7 +401,7 @@ Knox, E.G. (1964) The detection of space-time interactions. \textit{Journal of t
 \item[]
 Long, J.A., Nelson, T.A. (2013) Measuring dynamic interaction in movement data. \textit{Transactions in GIS}.  \textbf{17}(1): 62-77.
 \item[]
-Long, J.A., Nelson, T.A., Webb, S.L., Gee, K. (\textit{in press}) A critical examination of incdices of dynamic interaction for wildlife telemetry studies. \textit{Journal of Animal Ecology}. DOI: 10.1111/1365-2656.12198. 18p.
+Long, J.A., Nelson, T.A., Webb, S.L., Gee, K. (2014) A critical examination of incdices of dynamic interaction for wildlife telemetry studies. \textit{Journal of Animal Ecology}, \textbf{83}(5): 1216-1233.
 \item[]
 Macdonald, D.W., Ball, F.G., and Hough, N.G. (1980) The evaluation of home range size and configuration using radio tracking data. In \textit{A Handbook on Biotelemetry and Radio Tracking}, Amlaner, C.J. and Macdonald, D.W. (Eds.); Pergamon Press: Oxford; 405-424.
 \item[]

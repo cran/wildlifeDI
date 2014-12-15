@@ -9,13 +9,13 @@
 #'
 #' @details
 #'  This function can be used to calculate the Kenward et al. (1993) coefficient of sociality (Cs)
-#'  interaction between two animals. The Cs statistic tests the observed mean
+#'  between two animals. The Cs statistic tests the observed mean
 #'  distance between simultaneous fixes against that expected by the overall
 #'  distribution of distances between all fixes.
 #'  \deqn{Cs=\frac{D_E-D_O}{D_O+D_E}}{Cs=(De-Do)/(De+Do)}
 #'  Where \eqn{D_O}{Do} is the mean observed distance between simultaneous fixes, and \eqn{D_E}{De}
 #'  is the mean expected distance between all fixes. Kenward et al. (1993) propose Cs
-#'  as a useful metric for exploring attraction or avoidance behaviour:
+#'  as a useful metric for exploring attraction or avoidance behaviour.
 #'  Values for Cs closer to 1 indicate
 #'  attraction, while values for Cs closer to -1 indicate avoidance. Values of Cs
 #'  near 0 indicate that the two animals' movements have no influence on one another.
