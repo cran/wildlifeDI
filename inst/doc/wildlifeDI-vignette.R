@@ -1,4 +1,4 @@
-## ------------------------------------------------------------------------
+## ----warning=FALSE-------------------------------------------------------
 library(wildlifeDI)
 data(deer)
 deer
@@ -12,14 +12,15 @@ deer38
 ## ------------------------------------------------------------------------
 checkTO(deer37,deer38)
 
-## ----SIFig---------------------------------------------------------------
+## ----message=FALSE-------------------------------------------------------
 library(adehabitatHR)
 library(rgeos)
+
+## ----fig.width=5,fig.align='center'--------------------------------------
 #convert ltraj to SpatialPoints - required for kde
 pts37 <- SpatialPoints(ld(deer37)[,1:2])
 pts38 <- SpatialPoints(ld(deer38)[,1:2])
-#compute kernel UD surface - use default method 
-#    for obtaining h parameter
+#compute kernel UD surface - use default method for obtaining h parameter
 kde37 <- kernelUD(pts37)
 kde38 <- kernelUD(pts38)
 #extract 95% volume contour for HR analysis
@@ -43,18 +44,10 @@ deer38.sim
 ## ------------------------------------------------------------------------
 Prox(deer37, deer38, tc=7.5*60, dc=50)
 
-## ----label=ProxFig-------------------------------------------------------
-prox.df <- Prox(deer37, deer38, tc=7.5*60, dc=50, local=TRUE)
-plot(prox.df$date,prox.df$prox,type="l")
-
-## ------------------------------------------------------------------------
-spts <- contacts(deer37,deer38,tc=7.5*60, dc=50)
-plot(spts)
-
 ## ------------------------------------------------------------------------
 Ca(deer37, deer38, tc=7.5*60, dc=50)
 
-## ----label=DonFig--------------------------------------------------------
+## ----fig.align='center',fig.width=7--------------------------------------
 Don(deer37,deer38, tc=7.5*60, dc=50)
 
 ## ------------------------------------------------------------------------
@@ -73,20 +66,31 @@ oz <- gIntersection(hr37, hr38)
 HAI(deer37, deer38, oz, tc=7.5*60, dc=50)
 
 ## ------------------------------------------------------------------------
+IAB(deer37, deer38, dc=50, tc=7.5*60)
+
+## ------------------------------------------------------------------------
 Cr(deer37, deer38, tc=7.5*60)
 
 ## ------------------------------------------------------------------------
 DI(deer37, deer38, tc=7.5*60)
 
+## ----fig.align='center',fig.width=7--------------------------------------
+prox.df <- Prox(deer37, deer38, tc=7.5*60, dc=50, local=TRUE)
+plot(prox.df$date1,prox.df$prox,type="l")
+
+## ----fig.align='center',fig.width=7--------------------------------------
+df <- IAB(deer37, deer38, dc=50, tc=7.5*60, local=TRUE)
+plot(df$date, df$Iab,type='l')
+
 ## ------------------------------------------------------------------------
 #obtain the local di analysis data-frame
 di.df <- DI(deer37, deer38, tc=7.5*60, local=TRUE)
 
-## ----label=diFig---------------------------------------------------------
+## ----fig.align='center',fig.width=7--------------------------------------
 #Examine the temporal dynamics of local di
 plot(di.df$date, di.df$di,type="l")
 
-## ----label=diFigsmooth---------------------------------------------------
+## ----fig.align='center',fig.width=7--------------------------------------
 #Smoothed version of local di
 di.df$smooth <- 0
 #4 fixes/hour x 6 hours on either side of 12 hour centered window
@@ -99,11 +103,4 @@ for (i in (w+1):(n-1-w)){
   }
 
 plot(di.df$date, di.df$smooth,type="l")
-
-## ------------------------------------------------------------------------
-IAB(deer37, deer38, dc=50, tc=7.5*60)
-
-## ------------------------------------------------------------------------
-df <- IAB(deer37, deer38, dc=50, tc=7.5*60, local=TRUE)
-plot(df$date, df$Iab,type='l')
 

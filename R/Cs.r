@@ -25,12 +25,9 @@
 #'  or avoidance). See the function \code{GetSimultaneous} for details on how
 #'  simultaneous fixes are determined from two trajectories.
 #'
-#' @param traj1 an object of the class \code{ltraj} which contains the time-stamped
-#'    movement fixes of the first object. Note this object must be a \code{type II
-#'    ltraj} object. For more information on objects of this type see \code{
-#'    help(ltraj)}.
-#'  @param traj2 same as \code{traj1}.
-#'  @param tc time threshold for determining simultaneous fixes -- see function: \code{GetSimultaneous}.
+#' @param traj1 an object of the class \code{ltraj} which contains the time-stamped movement fixes of the first object. Note this object must be a \code{type II ltraj} object. For more information on objects of this type see \code{help(ltraj)}.
+#' @param traj2 same as \code{traj1}.
+#' @param tc time threshold for determining simultaneous fixes -- see function: \code{GetSimultaneous}.
 #'
 #' @return
 #'  This function returns a list of objects representing the calculated values from the
@@ -47,6 +44,7 @@
 #' Kenward, R.E., Marcstrom, V. and Karlbom, M. (1993) Post-nestling behaviour in
 #'  goshawks, \emph{Accipiter gentilis: II}. Sex differences in sociality and nest-switching.
 #'  \emph{Animal Behaviour}. \bold{46}, 371--378.
+#'
 #'
 #' @keywords indices
 #' @seealso GetSimultaneous

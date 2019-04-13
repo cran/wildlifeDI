@@ -16,8 +16,8 @@
 #' @return
 #' A \code{list} of with three pieces of information, whether the two trajectories overlap (\code{$TO}) a logical vector, the beginning (\code{$TOstart}), and end (\code{$TOend}) of the overlap period, stored as \code{POSIX} objects.  
 #'
-#' @keywords temporal overlap
-#' @seealso GetSimultaneous
+#' @keywords processing
+#' @seealso GetSimultaneous, GetTO
 #' @examples
 #' data(deer)
 #' deer37 <- deer[1]
@@ -33,8 +33,8 @@ checkTO <- function(traj1,traj2){
   tr2 <- ld(traj2)
   
   #identify the temporal overlap points.
-  t.min <- max(c(min(tr1$date),min(tr2$date)))
-  t.max <- min(c(max(tr1$date),max(tr2$date)))
+  t.min <- max(c(min(tr1$date,na.rm=T),min(tr2$date,na.rm=T)))
+  t.max <- min(c(max(tr1$date,na.rm=T),max(tr2$date,na.rm=T)))
   #check to see if there is an overlap period
   if (t.min > t.max){
     TO <- FALSE
