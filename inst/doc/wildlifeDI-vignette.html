@@ -1,44 +1,55 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 <meta name="author" content="Jed Long" />
 
 
 <title>wildlifeDI: Analysis of Dynamic Interaction Patterns in Wildlife Tracking Data</title>
 
+<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css" data-origin="pandoc">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -47,9 +58,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -95,7 +106,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -106,189 +117,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
-<style type="text/css">body {
-background-color: #fff;
-margin: 1em auto;
-max-width: 700px;
-overflow: visible;
-padding-left: 2em;
-padding-right: 2em;
-font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-font-size: 14px;
-line-height: 1.35;
-}
-#header {
-text-align: center;
-}
-#TOC {
-clear: both;
-margin: 0 0 10px 10px;
-padding: 4px;
-width: 400px;
-border: 1px solid #CCCCCC;
-border-radius: 5px;
-background-color: #f6f6f6;
-font-size: 13px;
-line-height: 1.3;
-}
-#TOC .toctitle {
-font-weight: bold;
-font-size: 15px;
-margin-left: 5px;
-}
-#TOC ul {
-padding-left: 40px;
-margin-left: -1.5em;
-margin-top: 5px;
-margin-bottom: 5px;
-}
-#TOC ul ul {
-margin-left: -2em;
-}
-#TOC li {
-line-height: 16px;
-}
-table {
-margin: 1em auto;
-border-width: 1px;
-border-color: #DDDDDD;
-border-style: outset;
-border-collapse: collapse;
-}
-table th {
-border-width: 2px;
-padding: 5px;
-border-style: inset;
-}
-table td {
-border-width: 1px;
-border-style: inset;
-line-height: 18px;
-padding: 5px 5px;
-}
-table, table th, table td {
-border-left-style: none;
-border-right-style: none;
-}
-table thead, table tr.even {
-background-color: #f7f7f7;
-}
-p {
-margin: 0.5em 0;
-}
-blockquote {
-background-color: #f6f6f6;
-padding: 0.25em 0.75em;
-}
-hr {
-border-style: solid;
-border: none;
-border-top: 1px solid #777;
-margin: 28px 0;
-}
-dl {
-margin-left: 0;
-}
-dl dd {
-margin-bottom: 13px;
-margin-left: 13px;
-}
-dl dt {
-font-weight: bold;
-}
-ul {
-margin-top: 0;
-}
-ul li {
-list-style: circle outside;
-}
-ul ul {
-margin-bottom: 0;
-}
-pre, code {
-background-color: #f7f7f7;
-border-radius: 3px;
-color: #333;
-white-space: pre-wrap; 
-}
-pre {
-border-radius: 3px;
-margin: 5px 0px 10px 0px;
-padding: 10px;
-}
-pre:not([class]) {
-background-color: #f7f7f7;
-}
-code {
-font-family: Consolas, Monaco, 'Courier New', monospace;
-font-size: 85%;
-}
-p > code, li > code {
-padding: 2px 0px;
-}
-div.figure {
-text-align: center;
-}
-img {
-background-color: #FFFFFF;
-padding: 2px;
-border: 1px solid #DDDDDD;
-border-radius: 3px;
-border: 1px solid #CCCCCC;
-margin: 0 5px;
-}
-h1 {
-margin-top: 0;
-font-size: 35px;
-line-height: 40px;
-}
-h2 {
-border-bottom: 4px solid #f7f7f7;
-padding-top: 10px;
-padding-bottom: 2px;
-font-size: 145%;
-}
-h3 {
-border-bottom: 2px solid #f7f7f7;
-padding-top: 10px;
-font-size: 120%;
-}
-h4 {
-border-bottom: 1px solid #f7f7f7;
-margin-left: 8px;
-font-size: 105%;
-}
-h5, h6 {
-border-bottom: 1px solid #ccc;
-font-size: 105%;
-}
-a {
-color: #0033dd;
-text-decoration: none;
-}
-a:hover {
-color: #6666ff; }
-a:visited {
-color: #800080; }
-a:visited:hover {
-color: #BB00BB; }
-a[href^="http:"] {
-text-decoration: underline; }
-a[href^="https:"] {
-text-decoration: underline; }
 
-code > span.kw { color: #555; font-weight: bold; } 
-code > span.dt { color: #902000; } 
-code > span.dv { color: #40a070; } 
-code > span.bn { color: #d14; } 
-code > span.fl { color: #d14; } 
-code > span.ch { color: #d14; } 
-code > span.st { color: #d14; } 
-code > span.co { color: #888888; font-style: italic; } 
-code > span.ot { color: #007020; } 
-code > span.al { color: #ff0000; font-weight: bold; } 
-code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
-</style>
+<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
 
 
 
@@ -302,20 +132,23 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">wildlifeDI: Analysis of Dynamic Interaction Patterns in Wildlife Tracking Data</h1>
 <h4 class="author">Jed Long</h4>
-<h4 class="date">12 April, 2019</h4>
+<h4 class="date">04 March, 2021</h4>
 
 
 <div id="TOC">
 <ul>
-<li><a href="#introduction">Introduction</a><ul>
+<li><a href="#introduction">Introduction</a>
+<ul>
 <li><a href="#some-terminology">Some Terminology</a></li>
 <li><a href="#data">Data</a></li>
 <li><a href="#checking-for-temporal-overlap">Checking for temporal overlap</a></li>
 <li><a href="#static-interaction-analysis">Static interaction analysis</a></li>
 <li><a href="#obtaining-simultaneous-fixes---t_alphabeta">Obtaining Simultaneous Fixes - T<span class="math inline">\(_{\alpha\beta}\)</span></a></li>
 </ul></li>
-<li><a href="#measuring-dynamic-interaction">Measuring Dynamic Interaction</a><ul>
-<li><a href="#global-analysis">Global Analysis</a><ul>
+<li><a href="#measuring-dynamic-interaction">Measuring Dynamic Interaction</a>
+<ul>
+<li><a href="#global-analysis">Global Analysis</a>
+<ul>
 <li><a href="#prox---proximity-analysis">Prox - Proximity analysis</a></li>
 <li><a href="#ca---coefficient-of-association">Ca - Coefficient of association</a></li>
 <li><a href="#don---doncasters-non-parametric-test-of-interaction">Don - Doncaster’s non-parametric test of interaction</a></li>
@@ -326,13 +159,15 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <li><a href="#cr---correlation-coefficient">Cr - Correlation coefficient</a></li>
 <li><a href="#di---dynamic-interaction-index">DI - Dynamic interaction index</a></li>
 </ul></li>
-<li><a href="#local-analysis">Local Analysis</a><ul>
+<li><a href="#local-analysis">Local Analysis</a>
+<ul>
 <li><a href="#proximity-analysis">Proximity Analysis</a></li>
 <li><a href="#iab-index">IAB index</a></li>
 <li><a href="#dynamic-interaction-index">Dynamic Interaction index</a></li>
 </ul></li>
 </ul></li>
-<li><a href="#summary">Summary</a><ul>
+<li><a href="#summary">Summary</a>
+<ul>
 <li><a href="#references">References</a></li>
 </ul></li>
 </ul>
@@ -347,8 +182,8 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p>Table 1: Terminology used in describing dynamic interaction methods.</p>
 <table>
 <colgroup>
-<col width="62%"></col>
-<col width="37%"></col>
+<col width="62%" />
+<col width="37%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -387,9 +222,9 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div id="data" class="section level2">
 <h2>Data</h2>
 <p>We examine a GPS telemetry dataset representing the movement of two deer over a one week interval. These data are provided as part of the <code>wildlifeDI</code> package, and are a subset of the data set explored in the case study in Long <em>et al.</em> (2014). For more information on how the deer data was collected or for citation please see the papers by Webb <em>et al.</em> (2009, 2010).</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(wildlifeDI)</a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="kw">data</span>(deer)</a>
-<a class="sourceLine" id="cb1-3" title="3">deer</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(wildlifeDI)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(deer)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>deer</span></code></pre></div>
 <pre><code>## 
 ## *********** List of class ltraj ***********
 ## 
@@ -407,8 +242,8 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## [1] &quot;pkey&quot;</code></pre>
 <p>As you can see, there are two individuals contained in this dataset, which are named based on their ids: <code>id = 37</code> and <code>id = 38</code>. The deer data represent the movement of these two individual deer over a one week period, with GPS fixes attempted at a 15 minute interval.</p>
 <p>In order to utilize the tools, each individuals movement trajectory needs to be stored as a separate <code>ltraj</code> object, which is simple to do. Here we simply extract the 1st and 2nd bursts in order to extract separate <code>ltraj</code> objects for each individual.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">deer37 &lt;-<span class="st"> </span>deer[<span class="dv">1</span>]</a>
-<a class="sourceLine" id="cb3-2" title="2">deer37</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>deer37 <span class="ot">&lt;-</span> deer[<span class="dv">1</span>]</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>deer37</span></code></pre></div>
 <pre><code>## 
 ## *********** List of class ltraj ***********
 ## 
@@ -423,8 +258,8 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## 
 ##  infolocs provided. The following variables are available:
 ## [1] &quot;pkey&quot;</code></pre>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">deer38 &lt;-<span class="st"> </span>deer[<span class="dv">2</span>]</a>
-<a class="sourceLine" id="cb5-2" title="2">deer38</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>deer38 <span class="ot">&lt;-</span> deer[<span class="dv">2</span>]</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>deer38</span></code></pre></div>
 <pre><code>## 
 ## *********** List of class ltraj ***********
 ## 
@@ -443,7 +278,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div id="checking-for-temporal-overlap" class="section level2">
 <h2>Checking for temporal overlap</h2>
 <p>Before embarking on analysis of dynamic interaction, it is worthwhile to check whether two telemetry datasets overlap temporally. This can be easily done using the <code>checkTO</code> function. The function tells us first if the two datasets overlap temporally (a necessary condition for spatial-temporal interaction), then it gives us the timings of the start and end of the overlap period.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="kw">checkTO</span>(deer37,deer38)</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">checkTO</span>(deer37,deer38)</span></code></pre></div>
 <pre><code>## $TO
 ## [1] TRUE
 ## 
@@ -459,33 +294,33 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p>Static interaction can be defined broadly as the spatial overlap of two individual home ranges, or more recently, as the volume of intersection between two individual utilization distributions (Macdonald et al. 1980, Millspaugh et al. 2004). It is often useful to examine static interaction to investigate the potential for dynamic interactions to exist. Here we investigate the simpler case of proportion of home range overlap, to test for the potential for dynamic interaction between <code>deer37</code> and <code>deer38</code>. The proportion of overlap is calculated simply as: <span class="math display">\[
 \text{SI} = \frac{HR_\alpha \cap HR_\beta}{HR_\alpha \cup HR_\beta}
 \]</span> where HR refers to the corresponding home range area. To compute the individual home ranges, the <span class="math inline">\(95 %\)</span> volume contour of the kernel density estimate will be used, as this is easily computed in the <code>adehabitatHR</code> package. To compute these metrics we will use the <code>adehabitatHR</code> and <code>rgeos</code> packages, so please make sure they are installed on your machine.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="kw">library</span>(adehabitatHR)</a>
-<a class="sourceLine" id="cb9-2" title="2"><span class="kw">library</span>(rgeos)</a></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1"><span class="co">#convert ltraj to SpatialPoints - required for kde</span></a>
-<a class="sourceLine" id="cb10-2" title="2">pts37 &lt;-<span class="st"> </span><span class="kw">SpatialPoints</span>(<span class="kw">ld</span>(deer37)[,<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>])</a>
-<a class="sourceLine" id="cb10-3" title="3">pts38 &lt;-<span class="st"> </span><span class="kw">SpatialPoints</span>(<span class="kw">ld</span>(deer38)[,<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>])</a>
-<a class="sourceLine" id="cb10-4" title="4"><span class="co">#compute kernel UD surface - use default method for obtaining h parameter</span></a>
-<a class="sourceLine" id="cb10-5" title="5">kde37 &lt;-<span class="st"> </span><span class="kw">kernelUD</span>(pts37)</a>
-<a class="sourceLine" id="cb10-6" title="6">kde38 &lt;-<span class="st"> </span><span class="kw">kernelUD</span>(pts38)</a>
-<a class="sourceLine" id="cb10-7" title="7"><span class="co">#extract 95% volume contour for HR analysis</span></a>
-<a class="sourceLine" id="cb10-8" title="8">hr37 &lt;-<span class="st"> </span><span class="kw">getverticeshr</span>(kde37,<span class="dv">95</span>)</a>
-<a class="sourceLine" id="cb10-9" title="9">hr38 &lt;-<span class="st"> </span><span class="kw">getverticeshr</span>(kde38,<span class="dv">95</span>)</a>
-<a class="sourceLine" id="cb10-10" title="10"><span class="co">#plot</span></a>
-<a class="sourceLine" id="cb10-11" title="11"><span class="kw">plot</span>(hr38)</a>
-<a class="sourceLine" id="cb10-12" title="12"><span class="kw">plot</span>(hr37,<span class="dt">border=</span><span class="st">&quot;red&quot;</span>,<span class="dt">add=</span>T)</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(adehabitatHR)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rgeos)</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">#convert ltraj to SpatialPoints - required for kde</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>pts37 <span class="ot">&lt;-</span> <span class="fu">SpatialPoints</span>(<span class="fu">ld</span>(deer37)[,<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>])</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>pts38 <span class="ot">&lt;-</span> <span class="fu">SpatialPoints</span>(<span class="fu">ld</span>(deer38)[,<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>])</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">#compute kernel UD surface - use default method for obtaining h parameter</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>kde37 <span class="ot">&lt;-</span> <span class="fu">kernelUD</span>(pts37)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>kde38 <span class="ot">&lt;-</span> <span class="fu">kernelUD</span>(pts38)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co">#extract 95% volume contour for HR analysis</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>hr37 <span class="ot">&lt;-</span> <span class="fu">getverticeshr</span>(kde37,<span class="dv">95</span>)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>hr38 <span class="ot">&lt;-</span> <span class="fu">getverticeshr</span>(kde38,<span class="dv">95</span>)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co">#plot</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(hr38)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(hr37,<span class="at">border=</span><span class="st">&quot;red&quot;</span>,<span class="at">add=</span>T)</span></code></pre></div>
 <p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1"><span class="co">#Compute SI index</span></a>
-<a class="sourceLine" id="cb11-2" title="2"><span class="kw">gArea</span>(<span class="kw">gIntersection</span>(hr37,hr38))<span class="op">/</span><span class="kw">gArea</span>(<span class="kw">gUnion</span>(hr37,hr38))</a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Compute SI index</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">gArea</span>(<span class="fu">gIntersection</span>(hr37,hr38))<span class="sc">/</span><span class="fu">gArea</span>(<span class="fu">gUnion</span>(hr37,hr38))</span></code></pre></div>
 <pre><code>## [1] 0.6391133</code></pre>
 <p>Here we can see there is substantial overlap in home ranges between these two individuals, and thus some would suggest that this may be evidence of likely dynamic interaction, which is what we will explore further. NOTE: The home ranges we have computed here (saved as the objects <code>hr37</code> and <code>hr38</code>) will be used in later analysis.</p>
 </div>
 <div id="obtaining-simultaneous-fixes---t_alphabeta" class="section level2">
 <h2>Obtaining Simultaneous Fixes - T<span class="math inline">\(_{\alpha\beta}\)</span></h2>
 <p>Measurement of dynamic interaction often requires the identification of those fixes that are deemed to be simultaneous in time (T<span class="math inline">\(_{\alpha\beta}\)</span>) based on some time tolerance threshold - <span class="math inline">\(t_c\)</span>. As this is rarely the case in real datasets, the function <code>GetSimultaneous</code> was developed to extract simultaneous fixes from two movement datasets. The tolerance parameter (<span class="math inline">\(t_c\)</span>) can be used to allow the times to deviate slightly and still be considered simultaneous. Note that that <code>ltraj</code> objects, despite displaying date-time formats, measure times in seconds and thus the <span class="math inline">\(t_c\)</span> argument is given in seconds. The documentation for the <code>GetSimultaneous</code> function tells us to pass in two trajectories, and a <code>tc</code> argument. In this example we will use 7.5 minutes as <span class="math inline">\(t_c\)</span>, which is 1/2 the sampling interval (which is generally a good starting point) of 15 minutes. This means that any two fixes that are within 7.5 minutes of each-other are deemed simultaneous. The result of the <code>GetSimultaneous</code> function is a list with two <code>ltraj</code> objects which can be extracted.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1">deers &lt;-<span class="st"> </span><span class="kw">GetSimultaneous</span>(deer37,deer38,<span class="dt">tc=</span><span class="fl">7.5</span><span class="op">*</span><span class="dv">60</span>)</a>
-<a class="sourceLine" id="cb13-2" title="2">deer37.sim &lt;-<span class="st"> </span>deers[<span class="dv">1</span>]</a>
-<a class="sourceLine" id="cb13-3" title="3">deer38.sim &lt;-<span class="st"> </span>deers[<span class="dv">2</span>]</a>
-<a class="sourceLine" id="cb13-4" title="4">deer37.sim</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>deers <span class="ot">&lt;-</span> <span class="fu">GetSimultaneous</span>(deer37,deer38,<span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>deer37.sim <span class="ot">&lt;-</span> deers[<span class="dv">1</span>]</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>deer38.sim <span class="ot">&lt;-</span> deers[<span class="dv">2</span>]</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>deer37.sim</span></code></pre></div>
 <pre><code>## 
 ## *********** List of class ltraj ***********
 ## 
@@ -500,7 +335,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## 
 ##  infolocs provided. The following variables are available:
 ## [1] &quot;pkey&quot;</code></pre>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1">deer38.sim</a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>deer38.sim</span></code></pre></div>
 <pre><code>## 
 ## *********** List of class ltraj ***********
 ## 
@@ -529,7 +364,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 \text{Prox} = \frac{T_{\alpha\beta}}{ST_{\alpha\beta}}
 \]</span> Further, it can be useful to measure the variability in proximity through time. Thus, simply creating a time-series graphic of <span class="math inline">\(d_{\alpha\beta}\)</span> can be of interest.</p>
 <p>The function <code>Prox</code> can be used to implement proximity analysis in R. It requires that the user define <span class="math inline">\(t_c\)</span> to be passed to the function <code>GetSimultaneous</code>. The <code>Prox</code> function also requires the user to pass in an appropriate <span class="math inline">\(d_c\)</span> value for determining the spatial threshold at which fixes are proximal. Throughout this analysis we use a <span class="math inline">\(t_c\)</span> of 7.5 minutes and <span class="math inline">\(d_c\)</span> of 50 meters. Note: the spatial coordinates of the deer data are stored in UTM format making meters the appropriate spatial unit.</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1"><span class="kw">Prox</span>(deer37, deer38, <span class="dt">tc=</span><span class="fl">7.5</span><span class="op">*</span><span class="dv">60</span>, <span class="dt">dc=</span><span class="dv">50</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Prox</span>(deer37, deer38, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>, <span class="at">dc=</span><span class="dv">50</span>)</span></code></pre></div>
 <pre><code>## [1] 0.4139194</code></pre>
 <p><em>Interpretation:</em> Here the Prox statistic is 0.4139, an indication that there is definitely attraction by this pair. A Prox value of 0.4139 means that <span class="math inline">\(41.39\%\)</span> of the simultaneous fixes were within the defined distance threshold <span class="math inline">\(d_c\)</span> (50 m) of each other.</p>
 </div>
@@ -539,7 +374,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 \text{Ca} = \frac{2AB}{A+B}
 \]</span> where AB is the number of ST<span class="math inline">\(_{\alpha\beta}\)</span> fixes, and A and B are the number of fixes in <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span> respectively. It has been suggested in the literature that a cut-off of 0.5 can be used to identify attraction (Ca <span class="math inline">\(&gt; 0.5\)</span>) and avoidance (Ca <span class="math inline">\(&lt; 0.5\)</span>).</p>
 <p>The function <code>Ca</code> can be used to implement the Ca statistic in R. Again, we use threshold values of <span class="math inline">\(t_c\)</span> = 7.5 minutes and <span class="math inline">\(d_c\)</span> = 50 meters.</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1"><span class="kw">Ca</span>(deer37, deer38, <span class="dt">tc=</span><span class="fl">7.5</span><span class="op">*</span><span class="dv">60</span>, <span class="dt">dc=</span><span class="dv">50</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Ca</span>(deer37, deer38, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>, <span class="at">dc=</span><span class="dv">50</span>)</span></code></pre></div>
 <pre><code>## [1] 0.4042934</code></pre>
 <p><em>Interpretation:</em> Here the Ca statistic is 0.4043, an indication that there is moderate attraction by this pair. However, the Ca value is not <span class="math inline">\(&gt; 0.5\)</span> and we would not expect attraction based on the literature which suggests only Ca <span class="math inline">\(&gt; 0.5\)</span> as attraction. However, based on the Prox index, we know that some attraction behaviour occurs, and Ca corroborates this evidence with a Ca = 0.4043 which is near 0.5.</p>
 </div>
@@ -548,7 +383,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p>Doncaster’s (1990) non-parametric test for interaction follows from Knox’s (1964) test for space-time clustering. Essentially, Don is used to examine differences in the the distribution of distances between T<span class="math inline">\(_{\alpha\beta}\)</span> fixes, and the set of <span class="math inline">\(n^2 - n\)</span> permutations of non-T<span class="math inline">\(_{\alpha\beta}\)</span> fixes. The cumulative distribution of the T<span class="math inline">\(_{\alpha\beta}\)</span> fix distances can be compared graphically with the cumulative distribution of the <span class="math inline">\(n^2 - n\)</span> permuted distances. This can be useful, for example, to determine a suitable distance threshold - <span class="math inline">\(d_c\)</span> by identifying where the T<span class="math inline">\(_{\alpha\beta}\)</span> plot is below the expected line based on the <span class="math inline">\(n^2 - n\)</span> permutations.</p>
 <p>Upon selecting a suitable <span class="math inline">\(d_c\)</span> value, a contingency table can be constructed, identifying the number of T<span class="math inline">\(_{\alpha\beta}\)</span> and non-T<span class="math inline">\(_{\alpha\beta}\)</span> (termed unpaired) fix distances that are above and below the threshold <span class="math inline">\(d_c\)</span>. A <span class="math inline">\(\chi^2\)</span> test with 1 d.f. can be used to examine statistically the difference in T<span class="math inline">\(_{\alpha\beta}\)</span> and non-T<span class="math inline">\(_{\alpha\beta}\)</span> distances above and below <span class="math inline">\(d_c\)</span>.</p>
 <p>The function <code>Don</code> computes Doncaster’s non-parametric test. It requires a time threshold for simultaneous fixes (<span class="math inline">\(t_c\)</span>), along with a value for <span class="math inline">\(d_c\)</span> in appropriate units. The output presents the cumulative distribution plot, the contingency table of distances, and the <span class="math inline">\(\chi^2\)</span> test result. Significant <span class="math inline">\(\chi^2\)</span> values are indicative of attraction, while non-significant results suggest indifference.</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" title="1"><span class="kw">Don</span>(deer37,deer38, <span class="dt">tc=</span><span class="fl">7.5</span><span class="op">*</span><span class="dv">60</span>, <span class="dt">dc=</span><span class="dv">50</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Don</span>(deer37,deer38, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>, <span class="at">dc=</span><span class="dv">50</span>)</span></code></pre></div>
 <p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
 <pre><code>## $conTable
 ##            below.crit above.crit Totals
@@ -567,8 +402,8 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p>Using the same expectation probabilities derived for use with L<span class="math inline">\(_{AA}\)</span> and L<span class="math inline">\(_{BB}\)</span>, the L<span class="math inline">\(_{ixn}\)</span> statistic is a function of the ratio of simultaneous use (and avoidance) of the shared area and solitary use (and avoidance) of the shared area. Thus, the L<span class="math inline">\(_{ixn}\)</span> statistic is a measure of the simultaneity of use of the shared area. Note that this does not directly account for the actual distance between the two individuals, so when the shared area is large, the interpretation of interaction may be different from when the shared area is small. When L<span class="math inline">\(_{ixn}\)</span> <span class="math inline">\(\simeq 0\)</span> it suggests both individuals use the shared area randomly. L<span class="math inline">\(_{ixn} &gt; 0\)</span> indicates use of the shared area that is simultaneous (i.e., attraction), while L<span class="math inline">\(_{ixn} &lt; 0\)</span> indicates use of the shared area that is solitary (i.e., avoidance).</p>
 <p>The Minta (1992) statistics (L<span class="math inline">\(_{AA}\)</span>, L<span class="math inline">\(_{BB}\)</span>, and L<span class="math inline">\(_{ixn}\)</span>) are all drawn from observed and expected values taken from a 2x2 contingency table. Thus, a <span class="math inline">\(\chi^2\)</span> test with 1 d.f. can be used to make statistical inferences on the (L<span class="math inline">\(_{AA}\)</span>, L<span class="math inline">\(_{BB}\)</span>, and L<span class="math inline">\(_{ixn}\)</span>) values.</p>
 <p>As with previous methods, the user is required to submit a value for <span class="math inline">\(t_c\)</span> to be passed to the function <code>GetSimultaneous</code> internally. If <code>method=&quot;spatial&quot;</code> the user is required to input the home-ranges, stored as a <code>SpatialPolygons*</code> object for each individual. If <code>method=&quot;frequency&quot;</code> the user is required to pass in the overlap zone (<code>OZ</code>), stored as a <code>SpatialPolygons*</code> object. Here we use the home ranges, previously calculated in section 2.1 (i.e., the objects hr37 and hr38), which will be passed into the <code>Lixn</code> function. Along with the L<span class="math inline">\(_{AA}\)</span>, L<span class="math inline">\(_{BB}\)</span>, and L<span class="math inline">\(_{ixn}\)</span> statistics and their associated <em>p</em>-values, the function returns contingency tables for the expected probabilities, observed values, and odds depicting the simultaneous and solitary use of the shared area by each individual.</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" title="1"><span class="kw">Lixn</span>(deer37, deer38, <span class="dt">method=</span><span class="st">&#39;spatial&#39;</span>, <span class="dt">tc=</span><span class="fl">7.5</span><span class="op">*</span><span class="dv">60</span>, </a>
-<a class="sourceLine" id="cb23-2" title="2">     <span class="dt">hr1=</span>hr37, <span class="dt">hr2=</span>hr38)</a></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Lixn</span>(deer37, deer38, <span class="at">method=</span><span class="st">&#39;spatial&#39;</span>, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>, </span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">hr1=</span>hr37, <span class="at">hr2=</span>hr38)</span></code></pre></div>
 <pre><code>## $pTable
 ##           A          b
 ## B 0.6163124 0.08295322
@@ -609,7 +444,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 \text{Cs} =  \frac{D_E - D_O}{D_E + D_O}
 \]</span> Generally, the following interpretation of Cs has been suggested: Cs <span class="math inline">\(\simeq\)</span> 1 indicates attraction, while Cs <span class="math inline">\(\simeq\)</span> -1 indicates avoidance. However, because the observed values are paired, a Wilcox signed-rank test can be used to determine the significance of Cs, rather than relying on the more subjective interpretation.</p>
 <p>The Cs statistic is calculated using the function <code>Cs</code>, which produces output giving the observed and expected fix distances, the Cs value, and one-sided <em>p</em>-values resulting from the Wilcox signed-rank test for significant attraction and avoidance.</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" title="1"><span class="kw">Cs</span>(deer37, deer38, <span class="dt">tc=</span><span class="fl">7.5</span><span class="op">*</span><span class="dv">60</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Cs</span>(deer37, deer38, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>)</span></code></pre></div>
 <pre><code>## $Do
 ## [1] 422.3163
 ## 
@@ -635,12 +470,12 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p>where <span class="math inline">\(n\)</span> is the number of ST<span class="math inline">\(_{\alpha\beta}\)</span> fixes in the shared area based on user given thresholds for <span class="math inline">\(t_c\)</span> and <span class="math inline">\(d_c\)</span>, and <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> are the number of solitary fixes, for <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span> respectively, in the shared area. Essentially, HAI tests ST<span class="math inline">\(_{\alpha\beta}\)</span> use of the shared area against solitary use of the shared area. This is useful, as interaction would not be expected outside of the shared area of the home ranges. When HAI <span class="math inline">\(\simeq 1\)</span> it is an indication of attraction, and when HAI <span class="math inline">\(\simeq 0\)</span> it is an indication of avoidance.</p>
 <p>The HAI statistic can be computed via the function <code>HAI</code>. Like Ca, HAI requires that the user input values for the thresholds <span class="math inline">\(t_c\)</span> and <span class="math inline">\(d_c\)</span>, but also like Lixn that the user provide a polygon for defining the overlap zones. The overlap zone (OZ) must be a <code>SpatialPolygons*</code> object. The output is simply the value of the HAI statistic, which can be interpreted identically to Ca, that is a cut-off of 0.5 can be used to identify attraction (HAI <span class="math inline">\(&gt; 0.5\)</span>) and avoidance (HAI <span class="math inline">\(&lt; 0.5\)</span>).</p>
 <p>Below we use the package <code>rgeos</code> and the function <code>gIntersection</code> to compute the intersection between the two deer home ranges and delineate the overlap zone, stored as object <code>oz</code>.</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" title="1"><span class="co">#compute overlap zone</span></a>
-<a class="sourceLine" id="cb27-2" title="2"><span class="co">#install.packages(&#39;rgeos&#39;)</span></a>
-<a class="sourceLine" id="cb27-3" title="3"><span class="kw">library</span>(rgeos)</a>
-<a class="sourceLine" id="cb27-4" title="4">oz &lt;-<span class="st"> </span><span class="kw">gIntersection</span>(hr37, hr38)</a>
-<a class="sourceLine" id="cb27-5" title="5"></a>
-<a class="sourceLine" id="cb27-6" title="6"><span class="kw">HAI</span>(deer37, deer38, oz, <span class="dt">tc=</span><span class="fl">7.5</span><span class="op">*</span><span class="dv">60</span>, <span class="dt">dc=</span><span class="dv">50</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co">#compute overlap zone</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages(&#39;rgeos&#39;)</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rgeos)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>oz <span class="ot">&lt;-</span> <span class="fu">gIntersection</span>(hr37, hr38)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="fu">HAI</span>(deer37, deer38, oz, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>, <span class="at">dc=</span><span class="dv">50</span>)</span></code></pre></div>
 <pre><code>## [1] 0.2935961</code></pre>
 <p><em>interpretation:</em> Here we see that HAI is 0.2942, which suggests there is little evidence of attraction in the shared area of the home range (HAI <span class="math inline">\(&lt; 0.5\)</span>). In comparison with Ca = 0.4043, HAI is found to be lower here, which suggests there may have been a number of simultaneous fixes outside of the shared-area that were within the <span class="math inline">\(d_c\)</span> = 50m threshold.</p>
 </div>
@@ -651,7 +486,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 \text{IAB}(t) = exp\left[ -0.5(D_{AB}(t)/\Delta)^2 \right]
 \]</span></p>
 <p>where <span class="math inline">\(D_{AB}\)</span> is the distance between two simultaneous (<span class="math inline">\(T_{\alpha\beta}\)</span>) telemetry fixes. Instead of using a critical distance threshold, the IAB statistic uses a parameter (<span class="math inline">\(\Delta\)</span>) that represents the point maximum slope of the distance effect function which measures the potential influence domain between the two animals. In the R function <span class="math inline">\(\Delta\)</span> is simply the <code>dc</code> parameter. Further, a novel simulation procedure is proposed for generating the expectation against which a statistical test is based. That is, a wrapped shifting method is used to maintain the serial correlation structure implicit to the movement data. At each shift, a sample statistic (termed MAB) is computed to generate the distribution of values for the test statistic.</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" title="1"><span class="kw">IAB</span>(deer37, deer38, <span class="dt">dc=</span><span class="dv">50</span>, <span class="dt">tc=</span><span class="fl">7.5</span><span class="op">*</span><span class="dv">60</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">IAB</span>(deer37, deer38, <span class="at">dc=</span><span class="dv">50</span>, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>)</span></code></pre></div>
 <pre><code>## $IAB.obs
 ## [1] 0.3986007
 ## 
@@ -668,7 +503,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div id="cr---correlation-coefficient" class="section level3">
 <h3>Cr - Correlation coefficient</h3>
 <p>The correlation coefficient (Cr) was proposed by Shirabe (2006) to measure the degree of correlation in movement data represented as a path as opposed to as points (that is, as <em>n</em> - 1 movement segments). The Cr statistic takes the form of a multivariate Pearson product-moment correlation coefficient (see Shirabe 2006 for more details on how Cr is computed). Essentially, Cr is based on computing differences in the simultaneous path segments between <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span>. The differences are defined as deviations from the respective path mean vectors. Interpretation of the Cr statistic is similar to a typical correlation coefficient: Cr <span class="math inline">\(\simeq 1\)</span> indicates correlated movements, while Cr <span class="math inline">\(\simeq -1\)</span> indicates negatively correlated movements (e.g., repulsion), and Cr <span class="math inline">\(\simeq 0\)</span> indicates random movement, with respect to the other individual. It is important to note that Cr does not account for the distance between the two individuals at any point in its derivation, thus it is up to the analyst to infer whether the correlations measured are in fact meaningful.</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" title="1"><span class="kw">Cr</span>(deer37, deer38, <span class="dt">tc=</span><span class="fl">7.5</span><span class="op">*</span><span class="dv">60</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Cr</span>(deer37, deer38, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>)</span></code></pre></div>
 <pre><code>## [1] 0.3706059</code></pre>
 <p><em>interpretation:</em> A Cr value of 0.3706 indicates that there is some evidence for cohesive behaviour. Specifically, we interpret Cr like a correlation coefficient. It is difficult to know in this case if the slightly positive Cr value suggests that the two deer movements are correlated, but based on the result from Prox, we would expect this behaviour to occur from Thursday to Sunday.</p>
 </div>
@@ -683,7 +518,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 \]</span></p>
 <p>where <span class="math inline">\(d^\alpha_t\)</span> (<span class="math inline">\(\beta\)</span> respectively) are movement displacements for segment <span class="math inline">\(t\)</span>, and <span class="math inline">\(\theta^\alpha_t\)</span> (<span class="math inline">\(\beta\)</span> respectively) are movement azimuths for segment <span class="math inline">\(t\)</span>. The parameter <span class="math inline">\(\delta\)</span> is a scaling factor for the displacement component (denoted as <span class="math inline">\(\alpha\)</span> in Long and Nelson 2013).</p>
 <p>Calculation of DI is computed via the function <code>DI</code>. The <code>DI</code> function outputs the value of the DI (along with DI<span class="math inline">\(_{\theta}\)</span> and DI<span class="math inline">\(_d\)</span>).</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" title="1"><span class="kw">DI</span>(deer37, deer38, <span class="dt">tc=</span><span class="fl">7.5</span><span class="op">*</span><span class="dv">60</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">DI</span>(deer37, deer38, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>)</span></code></pre></div>
 <pre><code>## $DI
 ## [1] 0.1510688
 ## 
@@ -707,40 +542,40 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div id="proximity-analysis" class="section level3">
 <h3>Proximity Analysis</h3>
 <p>Proximity analysis via the function <code>Prox</code> is easily extended to local analysis, in that we can compute the proximity (i.e., Euclidean distance) between each simultaneous fix. This is done in the function <code>Prox</code> by setting the option <code>local = TRUE</code>; the output is a <code>dataframe</code> for easy further manipulation.</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" title="1">prox.df &lt;-<span class="st"> </span><span class="kw">Prox</span>(deer37, deer38, <span class="dt">tc=</span><span class="fl">7.5</span><span class="op">*</span><span class="dv">60</span>, <span class="dt">dc=</span><span class="dv">50</span>, <span class="dt">local=</span><span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb35-2" title="2"><span class="kw">plot</span>(prox.df<span class="op">$</span>date1,prox.df<span class="op">$</span>prox,<span class="dt">type=</span><span class="st">&quot;l&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>prox.df <span class="ot">&lt;-</span> <span class="fu">Prox</span>(deer37, deer38, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>, <span class="at">dc=</span><span class="dv">50</span>, <span class="at">local=</span><span class="cn">TRUE</span>)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(prox.df<span class="sc">$</span>date1,prox.df<span class="sc">$</span>prox,<span class="at">type=</span><span class="st">&quot;l&quot;</span>)</span></code></pre></div>
 <p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
 <p><em>Interpretation:</em> We can use this time-series plot of proximity to examine the local-scale variation in proximity between the two deer. For instance, it appears the two deer remained close together from mid-day Thursday until around Sunday morning. Examining temporal variation in Prox can be useful for exploring temporal covariates associated with attraction behaviour.</p>
 </div>
 <div id="iab-index" class="section level3">
 <h3>IAB index</h3>
 <p>Here I have also implemented a local version of the analysis, so that the temporal variation in the IAB index can be graphed through time.</p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" title="1">df &lt;-<span class="st"> </span><span class="kw">IAB</span>(deer37, deer38, <span class="dt">dc=</span><span class="dv">50</span>, <span class="dt">tc=</span><span class="fl">7.5</span><span class="op">*</span><span class="dv">60</span>, <span class="dt">local=</span><span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb36-2" title="2"><span class="kw">plot</span>(df<span class="op">$</span>date, df<span class="op">$</span>Iab,<span class="dt">type=</span><span class="st">&#39;l&#39;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">IAB</span>(deer37, deer38, <span class="at">dc=</span><span class="dv">50</span>, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>, <span class="at">local=</span><span class="cn">TRUE</span>)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(df<span class="sc">$</span>date, df<span class="sc">$</span>Iab,<span class="at">type=</span><span class="st">&#39;l&#39;</span>)</span></code></pre></div>
 <p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
 <p><em>Interpretation:</em> The local IAB analysis further corroborates the timing of interactive behaviour observed using the local Prox analysis and the local di statistic. Here we can see that the strongest interactions occur from midday Thursday until Sunday morning. The shape of the local IAB graph is the opposite of that observed with Prox.</p>
 </div>
 <div id="dynamic-interaction-index" class="section level3">
 <h3>Dynamic Interaction index</h3>
 <p>Further, the DI statistic provides a spatially and temporally local alternative (di) that can be computed for each pair of simultaneous movement segments. The di index affords the ability to investigate the spatial and temporal dynamics of dynamic interaction behaviour, through plots of di through time, or maps of di. Thus, the local version – di can be said to measure the <em>dynamics</em> of dynamic interaction behaviour. Note, similar to the Cr statistic, DI and di do not consider the distance separating the two individuals, and it is up to the analyst to determine if the necessary conditions exist for interactive behaviour. If option <code>local = TRUE</code> the function returns a dataframe with columns corresponding to the local measures (<code>di</code>, <code>di.theta</code>, and <code>di.d</code> – and time- and/or distance-based weights if set to <code>TRUE</code>). For more detailed information see the documentation, but see also Long and Nelson (2013).Much like with Prox, in order to further examine local level dynamics in the cohesiveness of movement, a time-series plot of di can be used to identify temporal trends in cohesive movement behaviour.</p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" title="1"><span class="co">#obtain the local di analysis data-frame</span></a>
-<a class="sourceLine" id="cb37-2" title="2">di.df &lt;-<span class="st"> </span><span class="kw">DI</span>(deer37, deer38, <span class="dt">tc=</span><span class="fl">7.5</span><span class="op">*</span><span class="dv">60</span>, <span class="dt">local=</span><span class="ot">TRUE</span>)</a></code></pre></div>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb38-1" title="1"><span class="co">#Examine the temporal dynamics of local di</span></a>
-<a class="sourceLine" id="cb38-2" title="2"><span class="kw">plot</span>(di.df<span class="op">$</span>date, di.df<span class="op">$</span>di,<span class="dt">type=</span><span class="st">&quot;l&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co">#obtain the local di analysis data-frame</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>di.df <span class="ot">&lt;-</span> <span class="fu">DI</span>(deer37, deer38, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>, <span class="at">local=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Examine the temporal dynamics of local di</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(di.df<span class="sc">$</span>date, di.df<span class="sc">$</span>di,<span class="at">type=</span><span class="st">&quot;l&quot;</span>)</span></code></pre></div>
 <p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAqAAAAEgCAMAAABcujGyAAAAhFBMVEUAAAAAADoAAGYAOmYAOpAAZmYAZpAAZrY6AAA6ADo6AGY6Ojo6kNtmAABmADpmAGZmOgBmOpBmZgBmZmZmkJBmtrZmtv+QOgCQOjqQZgCQkGaQtpCQ2/+2ZgC225C2/7a2/9u2///bkDrb25Db/7bb/9vb////tmb/25D//7b//9v///9ANmuHAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAUCElEQVR4nO2diXrjuJVG0ZWecXVid1KZpJxJWpO0J9Oyzfd/vxEXAPdiIbGSV9R/vq9KNAlebEfgIolQAwCCUUcXAIA1ICgQDQQFooGgQDQQFIgGggLRQFAgGggKRANBgWggKBANBAWigaBANBAUiAaCAtFAUCAaCApEA0GBaCAoEA0EBaKBoEA0EBSIBoIC0UBQIBoICkQDQYFoICgQDQQFooGgQDQQFIgGggLRQFAgGggKRANBgWggKBANBAWigaBANBAUiAaCAtFAUCAaCApEA0GBaCAoEA0EBaKBoEA0EBSIBoIC0UBQIBoICkQDQYFoICgQDQQFooGgQDQQFIgGggLRQFAgGggKRANBgWggKBANBAWigaBANBAUiAaCAtFAUCAaCApEA0GBaCAoEA0EBaKBoEA0EBSIBoIC0UBQIJo8QT9f1cSXXzsVBwBOlqBv6nleuOoFAPqSI+jnq9Hy7cffOhQGAJccQT9evuvFKw7yYBcwggLRZJ6DLkMozkHBTuRdxX+8zFfx0fFTAZBEH0H3DgfOCgQFoukt6FvkKh6CgiR2HkHzTy3kcmAVjm29XXM/ySH+iB5rmadaD+i+n1VO5qGka1lthc7KvBoIKiLPYkETDkVTEuWvihVEkSKtJ9kDCFoauelZyuxQNKRyRi1lLIkPZ2Z9VNDAnsqE3Ha4dZuH40HQ0shZgm4fNldHJtddpZWN76MKBF1sV6cXVN+mH9nnKr6XoCvnWzmCqohIiizE0izFaC5ooGpWUJ6hs3MfQSPt2WcE/Xzd+o7IgwkaufZQToJugqp8QZ1zBF1cdQpBb4Y+tQy3iWxBJ0O2BF0/xHvnoEZQtsVmsyaosgEGd70tjSJ52eLaM9Tyk/DgjvsKOlzV99XtpxdUMf2GcBGZoJE0brAleUhQOgh7gpIMsgVVNuRZBJUUriKvuxKUheB3oiBoLtvhsjLcX9Ct29WVgio32RGCKp3XuqDZ7QtBKyK5u0oUVDUS1C1SVNBlqa+gsdU1Qct5aEH9rm0uKMm+h6BDqqDJ0qmMtOk5lXMvgsY/3DmxoOxGU7KgQe0eTNDoXhDUyWZNUKWtg6A14fwUa5fUdXnFd20hqCL/L1EH1y33w0dPUGf/XEHpp5sQtEk4CMr/cAQNBSHJIGglUgTdKEf8A6BsQal9zC1l8zlaULILBM1PQe4eZ4XrLGg4RK6gNomro1lDxtu4oPb/mKDm7xRB6S3TVoJG2zQEBF0vRFdBuTQ6yWGCslunNYI6NXUJrYz2w90JGtUhHjhPUK6G34lDpaBL19pb3aWCEldoBi0FJS+6kPbAH6ofLYLZxWsaCMobKnqhE8mF/qGUs0L/10VQ28krgtKxjSVNEVQNKYJq/5WCoBkpZAoaLxG1jr30FVSv3E9Q29qlgsZ7CIKurrl7QamQAwRN51yCBjJIEFQ9kqAkr7sX1K2lXX+coEy2pYtt9CxB1aKJqhZU8aRxQU1hIGiLcFFBA43qhdtfUNqxLExfQYf9BNXlaiqoX8MgOwua9OibuxM0clmaKqiTNCaoTVMiqN0lR9Dh3gT9eHk2vymuerh3saDhPamgXkNBUC7okCeo3nlFUFOOiKD8TF7yCJoUrkhQxZbuQlB62CWZx7pPm7IhqBXTFmMvQclYaiqr6zw4K1nuEDSal7etlaCqkaDK1kZlC2oO52mCkkVyKWbLZevtCLrIebygCc8MyQm3si3Q6YWCRnbRMVdLxgVVpGybF0lxQZeLlnpBnaTbgqpBEbkzBDVZx0ZQM+Q6hQ8KaooWytqhYASdJ0a4/vBL6q65+R4qKF+RKGgghzpBSSlaCap108qUCqpIgmWpSlA7vAfJF1Q/NKRugplVQb03mF4fE1SVCupvcwWlByRFytZCUKq7SePWvqOgTrHLBTU7RAVVTvCOgupZuuqm6CoQVA3K+2DH7qHYUmtBTdSQoMHqCBV0aC+o8Y29mVmqXQXVs3Rd9hxBF0m6C8p6TXUQVDUVlIbPFJRXlQdqL+jgCWpr0VrQ5bFLbx3PQVcEDe9JBB3MJWWtoGpDUPouyBZUDXFB1dBSUNoajyHofClfOcVhjqC6sT1BFdmjoaA6lDBBrSW81HmCkkbZEpSqdVeCtuABBOUnAScU1BQ/ICjX+LSCGgVyBGUe0W3BYuwtqKJxCwT1zdpJUF3pQkFZMZWux9Be0Ona6O3WiuvP/0wNF9xmlJAqqFO6NEF1Pw4s7o6CmkqYKpxQ0OnaaLxJ//61ylBxgpIW3RJUsf4Z3P/13iFBVbagipdRsb52WoG8PKqgHy9P+lZ9j9tMS7WOEnTpNWWLkSooW172LhPUfrCtY9IyrnoVEnQw0fIENYVLFdQ6HRSUF7OfoBdFic8F//m68Xl9kqCmMQoFtW/teK0Cgtpi0IGEBI8Kyrr4TgRVfiDTHEzQwRabNIAqFpSkbifox8uz/hh+bQR90+5eYxL3EdQ0e5KgWjSTqRroByyFguoVOYKSzksQ1KlOvaBOOfXymqDGwkxBTfN1EnS4fPl1PsJH1Rvsh01D/BP79oJag5SVa6D97+aZLqgtQa2gev8kQUmeeuuKoIoVJV3QYPt0F5TWr6Wg40F+vo6P+2k+rh/in9gnC8r0SBN03jNBUHZwbSSo7cBEQdnHt3coqC6fI6gpheLRuguaQu0IqusQFZQ00rJAx01PUNtcPDfv7K9cUJtUG1gjqOooKAvFVq8KStrE5OYKqpe4oIpF8wUNVClQu03mhLex8ePn7Q/h3/Rd0rJz0FVBjRq1gpr45q8NQW34kKAqLCizL0XQoYOgtj4so6aC2o0Fgg5RsgV9ThHUfPM+eiG1m6B6g59nTFDWoVuCOkWwydMFZR2kigU132hLFNQe8tmOJGiyoKRFzaaDBJ0+Q1Ibt5AywoXW2jrQzi4U1Gzw81QklNmdpLQxqKBUe797SJn9FI6gZJUnji310YLyppYv6G1wTBlB08N5a5WtgxVUa6erZJpr2Y8IOlC1FOnqBEEVTUk1byroQEp6XkFNV8UFte0aJ1/QPN6yr+KVbjtlFncQVB9TBQiqMzaCKj+HQFPGBB0GJ09TFrNRN6fbE6yJnRhxQc2b/QhBa3/VafeOZKJ7WJl3f0tBA12QIqjNVYCgXtuFBGVGbAqqE/it01ZQp1F6jaAdf9XJBggiyOImObGZUzBBle12LbXuTSKo0+LExS1B7fvEhvIEJXLVCGprWSWodYPkacriCMrCFgrKG+gYQXv+qjNLUJpUi2EOVlpQYyxZy0pABSWv9o/GgvLFdoLadDFBPZcULcaWoLqhSwR1D0Fmpy6CJv2qs/jLIsw62ue2tVYFNXEigjJHzEuCoPZ0YUNQsq1W0OW/HQQlqXgQp6MqBDXd0VvQlF91ln9ZpJWgZkA9SlDWXbZUzmJQUF3MQkGJlhIEZY1La2Z3aCtowq86Kz7qXBXUduoBgkYO8bzwRqmwoJ6rvNgm58aC+vk3ENT8c/fLEVQ5RfQpEHT7V50VXxbpJOhgd4gIqvM3b+18QW2XlAtqIt2JoG4/ihB0k/IRVKmYoHaviKBDSFCTW1RQNgw4ze9k4wvK+/QgQUkkFtzr+rig1kcas7Ggg7KCOi26QhdBy78sQm+RqqURfUGV3WT2G6h9rqBLe6pKQekpZrKg3C+baZKg7JCy1DkoKOn1JEFNLj0F1U1rD0vL/lzQVcoFjX1GNFH6ZZGwoENMUNtaXNAhT1AykNQKqpPVCUqqJE5QJ1O/LFFBh30FrUO+oLbLo4J6AthkIUF5955aUEVKcTZBrTkxQck9TrVIHWov5QtKk0gX1L4J9xHUORwMpoTuPjxTvyznFnQICmoFmjcwQWlMR1CeHxWUZHOEoDr1hqADBJUvKE26KagTjO9ZK+iyxC3163SUoE6Nughq/xQqaOdpaLigQ0zQoUhQlt492vraChV08Pw0xb8/Qf2qe2QK2oxUQXlSWq9SQZd2DwrKczCC8pDNBfWcI4Lyraxzed1Y2aUJSvN0inpaQdWwKajzRzNBzeZ1QYdOgg4uvqC6nOuCklWnEbTzNDTe8W5VUOU0UYKgZj0VlGbSQlBFslLe7iz1owk69BZ0pOcXlt0ekCpo4ECbIqiXel9B/fcTK6i/0c/uDgTt+oXlREHNWx6CDrYRpArKO7S7oD2noakTdC2LFUFZpvcpKC/ngwvacxqaYwSliXnLBQV1lvwM0wTVYVYFdbZmCuqG3VVQ24S8I7oL2nMaGk/Qtb3uT9DALpIF5QuB9Q0E3fSvQNCO09BslbdSULJeOT3gCkrfK5WCrtJFUHWkoGYoSBF0278SQVtwbkHN5s0RoqegnjxxQYNF4AuB9Q8oaM5eTQX19w7JEFI1mHGyoK6CJIMKQYdkQVV428MKam/zF2XitXCpoLEC0JIGygNB+Xr/FObeBd0Il5dJsBciwTxBN4NDUL4Q+nNdUBXaB4KGgz2ioH5IN+O4oCxV9E9/r0RBY+E382+QsCZcT0HZWWeCN6EkPQSNpLKC+ic2kd0LBKX7RMq29uejCZqZR9pQqNOeV1C9ighxsKD8LgIETUqcKWgwCQR9bEELYjyCoNv789LF6gdBMzhW0JSdZAiaBATNSbhfOMGCpiRbT1UgaOTPWDYHCZpW1vQE2Qn3C3dyQVP29DIM/BkLyQVNjL0acYCgXowSQbM638txO8TugsbzXwvZU9DwxkA8CGoSZ2sTyXE7RBNBK1ooR9DN3CBoXYx0Qelyfe5rEVRkOb5DW0ETs+koaGRjIB4EDWW4o6Bpwe5V0MBWBUFZDImCtgnWXdC03DoLukknQQtn+ciDneUnJW6YeUskC7oRMpiJfEFLZ/nIo1hQaUDQnBxqEw4Vz6jPIyvG3Qm6bzYdBG2TURdBi2f5yAOCtsumnaCNM8IIKgABgu6WkQhBi2f5yOM0gu4EBLUUzvKRBwTNQ0QTCBF0l3AiGvyOENFeEBTEENFe0gSNTfclorEejLts83seQcEDAEGBaHYWdOPRNwA4YAQFojlMUACS6CFo58lqaukSFUU9OGhW/p+vVV6WZXpsVBT14KC5X1h+yixKg0wPjYqiHhw0M/+r+r6dqHWmR0ZFUQ8Oeshl9zmb8uio5ywqBD0gKIraNX/yveVCztmUR0c9Z1Eh6AFBUdSu+UNQmVHPWdRDBAUgFQgKRINvdwDRQFAgGggKRANBgWggKBANBAWigaBANBAUiAaCAtFAUCAaCApEs5Og5gehbX51N3KZngE5Pzbf/63U9YdfCuPaov7zpcXvWwiXJfL3JaMW4afi8la91sYNxKzk83V5ouw1/ujOMDuOoO8/lToTZH5+2eW/xgp/vLjfXykXdGQuahuDCJfMzklg/pHYhda2utiBmLXcBJ3rfnkcQd+/3prx4+d/jFH90I8i6GU6dLAjSHWxAzFr+Xz9j5+nJv3jn6ULOjXf9N/b7ThS8cW9adS8/vh/r9+X0dTEuy388Pcmgv7l63g8tkWuxAj68fPf25xBMIsu09nD+9eVJ2BnxtQ1/3j564uq+UHvLeZl7Jvrj/89lu06d1VK2OMEfbsp9P61wtDxjf72NL1Mizre5WbrVTUR9BbkFraDoC+3pSYD9FUZm3QjNDjE65hW0LklikPeBL2Olb88j21wnd71T0NK2MMEnU8bY9PZpHCr8edt+FxeTLzp0F95BqWL+jydSfQQ9LnVGcQ4YE6N+DEeQ8fK18e1MWlnzQ1bxk3Q99//OpbxMnbX1FXjO3877GGCzieJNZW+xRs75fYyRjbxZuebnYNO3dNKUH0R3yzixO0KZKnt1QRvE7NZC9wEXQaTm6Bzpye+848TlN1yKeFW4/GwsbyYeG+CBbUjaEtBh/m05nbq/eV/moygJmZLQafTsefBCJoY9uARtIrL89t4snR5Gl9MPMkjaHNB9RHoVt1pscUhnsRsKuj77//1t1+GOxhByYldHdf/HK/gh+vv/kTrOVe/5ow+eLpcczKiaS+ovuK+vSunN+a1wSGexGx2Fj7G/Hz9y+00lJ+DChT083UsoZqv4uuuZd7/8NN83jkFMfHGhUZX8XP7mSLX0uEQP38yM878Nw+etwX/U4vimLrmTQS9nYI/zW1gr+IFCjp9jvZXfR+06vO0sfnsi43X7j7o0n6myJX0OAedPpac36Hj6/gOzf60Jh5zqXkbQadPqC7sPqgoQQHIB4IC0UBQIBoICkQDQYFoICgQDQQFooGgQDQQFIgGggLRQFAgGggKRANBgWggKBANBAWigaBANBAUiAaCAtFAUCAaCApEA0GBaCAoEA0EBaKBoEA0EBSIBoIC0UDQ3nx8a/5g+kcCgjZBP6qNrhgflvQ8PbT2ma61SRpP0XBOIGgTvMeR6gdcX77889v/mic30mTN5xA5JxC0CWFBv0/P1vz2m3mqHQTNBoJWszzt0Qo3r/jH1/mR3Poc1DwUks0WUzkXz/mBoLXoWW+MoHTFx8uP/54FNZPjsNliqufiOT0QtBIz640WlK8YB8ontpbOFlM/F8/pgaCVmDkbtKDuivEhxc98agczW0z9XDynB4JW8uYK6q4YL5K+/Gonx6GzxdTPxXN6IGgl2yPot9/ef/rFrGWzxTSYi+fsQNBKzKw3/Bx0WTF6+u037eW4ls0Wg1tNm0DQWvSsN0Y2umK6iv/3y5Ndy2eLqZ+L5+xA0GrIfdB5Dix6Y/TzVc2X8eY+KJ8tpnounrMDQXuDL4tUAUGBaCAoEA0EBaKBoEA0EBSIBoIC0UBQIBoICkQDQYFoICgQDQQFooGgQDQQFIgGggLRQFAgGggKRANBgWggKBANBAWigaBANBAUiAaCAtFAUCCa/wd3MhZZHBqvsQAAAABJRU5ErkJggg==" style="display: block; margin: auto;" /></p>
 <p><em>Interpretation:</em> Here we see that the time-series plot of di reveals very abrupt fluctuations in di, from low to high values. These fluctuations may suggest little evidence of any periods where sustained cohesive (positive di) or opposing (negative di) movement occurs. In previous analysis, I have found it useful to use a temporal window in order to smooth out the fine-scale fluctuations in di to get a better idea of broader trends. Here I use a 12 hour window in order to re-plot the local level di, and view the dynamic changes in di.</p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" title="1"><span class="co">#Smoothed version of local di</span></a>
-<a class="sourceLine" id="cb39-2" title="2">di.df<span class="op">$</span>smooth &lt;-<span class="st"> </span><span class="dv">0</span></a>
-<a class="sourceLine" id="cb39-3" title="3"><span class="co">#4 fixes/hour x 6 hours on either side of 12 hour centered window</span></a>
-<a class="sourceLine" id="cb39-4" title="4">w &lt;-<span class="st"> </span><span class="dv">4</span><span class="op">*</span><span class="dv">6</span> </a>
-<a class="sourceLine" id="cb39-5" title="5">n &lt;-<span class="st"> </span><span class="kw">dim</span>(di.df)[<span class="dv">1</span>]   <span class="co">#no. of fixes</span></a>
-<a class="sourceLine" id="cb39-6" title="6"></a>
-<a class="sourceLine" id="cb39-7" title="7"><span class="cf">for</span> (i <span class="cf">in</span> (w<span class="op">+</span><span class="dv">1</span>)<span class="op">:</span>(n<span class="dv">-1</span><span class="op">-</span>w)){</a>
-<a class="sourceLine" id="cb39-8" title="8">  di.temp &lt;-<span class="st"> </span>di.df<span class="op">$</span>di[(i<span class="op">-</span>w)<span class="op">:</span>(i<span class="op">+</span>w)]</a>
-<a class="sourceLine" id="cb39-9" title="9">  di.df<span class="op">$</span>smooth[i] &lt;-<span class="st"> </span><span class="kw">mean</span>(di.temp,<span class="dt">na.rm=</span>T)</a>
-<a class="sourceLine" id="cb39-10" title="10">  }</a>
-<a class="sourceLine" id="cb39-11" title="11"></a>
-<a class="sourceLine" id="cb39-12" title="12"><span class="kw">plot</span>(di.df<span class="op">$</span>date, di.df<span class="op">$</span>smooth,<span class="dt">type=</span><span class="st">&quot;l&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Smoothed version of local di</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>di.df<span class="sc">$</span>smooth <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="co">#4 fixes/hour x 6 hours on either side of 12 hour centered window</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="dv">4</span><span class="sc">*</span><span class="dv">6</span> </span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">dim</span>(di.df)[<span class="dv">1</span>]   <span class="co">#no. of fixes</span></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> (w<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(n<span class="dv">-1</span><span class="sc">-</span>w)){</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>  di.temp <span class="ot">&lt;-</span> di.df<span class="sc">$</span>di[(i<span class="sc">-</span>w)<span class="sc">:</span>(i<span class="sc">+</span>w)]</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>  di.df<span class="sc">$</span>smooth[i] <span class="ot">&lt;-</span> <span class="fu">mean</span>(di.temp,<span class="at">na.rm=</span>T)</span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(di.df<span class="sc">$</span>date, di.df<span class="sc">$</span>smooth,<span class="at">type=</span><span class="st">&quot;l&quot;</span>)</span></code></pre></div>
 <p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
 <p>From the smoothed time-series plot we can again see a similar pattern as with Prox, whereby cohesive movement behaviour is strongest between mid-day Thursday into early Sunday morning. Within this period there are variations in the cohesive movement behaviour, perhaps related to the diurnal cyclical behaviour associated with deer movements. In situations where periods of cohesive movement are interspersed with random movement, the time-series plot of di (and/or smoothed di) can provide useful insight as to when and/or where this behaviour occurs.</p>
 </div>
@@ -769,6 +604,9 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 </div>
 </div>
 
+
+
+<!-- code folding -->
 
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
