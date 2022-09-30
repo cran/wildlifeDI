@@ -14,7 +14,9 @@
 #' @return
 #' An ltraj object with a new 'displacement' column in infolocs.
 #'
-# @references
+#' @references
+#'  Long, JA, Webb, SL, Harju, SM, Gee, KL (2022) Analyzing Contacts and Behavior from High Frequency 
+#'  Tracking Data Using the wildlifeDI R Package. \emph{Geographical Analysis}. \bold{54}, 648--663.
 #'
 #' @keywords contacts
 #' @seealso conPhase, conContext
@@ -54,7 +56,7 @@ conDisplacement <- function(ltraj,def='all',idcol='burst'){
   }
   
   # Set up displacement analysis
-  dfr <- ld(ltraj)
+  dfr <- ltraj2sf(ltraj)
   dfr$displacement <- 0
   n <- dim(dfr)[1]
   
@@ -69,7 +71,8 @@ conDisplacement <- function(ltraj,def='all',idcol='burst'){
     } else {
       for (i in ind){
         j <- cid_ani[which.min(abs(dfr$date[i]-dfr$date[cid_ani]))]
-        dfr$displacement[i] <-sqrt((dfr$x[i]-dfr$x[j])^2+(dfr$y[i]-dfr$y[j])^2)
+        dfr$displacement[i] <- st_distance(dfr[i,],dfr[j,])
+        #dfr$displacement[i] <-sqrt((dfr$x[i]-dfr$x[j])^2+(dfr$y[i]-dfr$y[j])^2)
       }
     }
   }

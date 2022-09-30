@@ -13,26 +13,23 @@ deer38
 checkTO(deer37,deer38)
 
 ## ----message=FALSE------------------------------------------------------------
-library(adehabitatHR)
-library(rgeos)
+library(sf)
 
 ## ----fig.width=5,fig.align='center'-------------------------------------------
-#convert ltraj to SpatialPoints - required for kde
-pts37 <- SpatialPoints(ld(deer37)[,1:2])
-pts38 <- SpatialPoints(ld(deer38)[,1:2])
-#compute kernel UD surface - use default method for obtaining h parameter
-kde37 <- kernelUD(pts37)
-kde38 <- kernelUD(pts38)
-#extract 95% volume contour for HR analysis
-hr37 <- getverticeshr(kde37,95)
-hr38 <- getverticeshr(kde38,95)
+#convert ltraj to sf points to compute mcp polygon
+pts37 <- ltraj2sf(deer37)
+pts38 <- ltraj2sf(deer38)
+
+#compute mcp polygons
+hr37 <- st_convex_hull(st_union(pts37))
+hr38 <- st_convex_hull(st_union(pts38)) 
 #plot
 plot(hr38)
 plot(hr37,border="red",add=T)
 
 ## -----------------------------------------------------------------------------
 #Compute SI index
-gArea(gIntersection(hr37,hr38))/gArea(gUnion(hr37,hr38))
+st_area(st_intersection(hr37,hr38))/st_area(st_union(hr37,hr38))
 
 ## -----------------------------------------------------------------------------
 deers <- GetSimultaneous(deer37,deer38,tc=7.5*60)
@@ -59,9 +56,7 @@ Cs(deer37, deer38, tc=7.5*60)
 
 ## -----------------------------------------------------------------------------
 #compute overlap zone
-#install.packages('rgeos')
-library(rgeos)
-oz <- gIntersection(hr37, hr38)
+oz <- st_intersection(hr37, hr38)
 
 HAI(deer37, deer38, oz, tc=7.5*60, dc=50)
 

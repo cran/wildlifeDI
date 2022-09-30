@@ -23,11 +23,13 @@
 #' 
 #' When citing this package please use see citation ('wildlifeDI), also please cite the appropriate papers associated with individual methods being used.
 #' 
+#' As of version 0.4.1 the package also includes a number of new functions for performing contact analysis with larger tracking datasets. These functions use a prefix 'con' to distinguish them from other functions in the package.
+#' 
 #' The functions in \code{wildlifeDI} utilize the \code{ltraj} objects from the package \code{adehabitat}. For more information on objects of this type see \code{help(ltraj)}.
 #'
 #' @author Jed Long
 #' 
-#' @import adehabitatLT sf sp stats graphics rgeos
+#' @import adehabitatLT sf sp stats graphics
 #
 #' @docType package
 #' @name wildlifeDI-package
