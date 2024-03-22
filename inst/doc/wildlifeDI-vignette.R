@@ -1,85 +1,81 @@
 ## ----warning=FALSE------------------------------------------------------------
 library(wildlifeDI)
+library(move2)
+library(sf)
+library(dplyr)
+library(adehabitatLT)
+
 data(deer)
 deer
 
 ## -----------------------------------------------------------------------------
-deer37 <- deer[1]
-deer37
-deer38 <- deer[2]
-deer38
-
-## -----------------------------------------------------------------------------
-checkTO(deer37,deer38)
+checkTO(deer)
 
 ## ----message=FALSE------------------------------------------------------------
 library(sf)
 
 ## ----fig.width=5,fig.align='center'-------------------------------------------
-#convert ltraj to sf points to compute mcp polygon
-pts37 <- ltraj2sf(deer37)
-pts38 <- ltraj2sf(deer38)
+idcol <- mt_track_id_column(deer)
+mcphr <- deer |>
+  group_by_at(idcol) |>
+  summarise() |>
+  st_convex_hull()
 
-#compute mcp polygons
-hr37 <- st_convex_hull(st_union(pts37))
-hr38 <- st_convex_hull(st_union(pts38)) 
-#plot
-plot(hr38)
-plot(hr37,border="red",add=T)
+plot(st_geometry(mcphr),border=c("red","black"))
 
 ## -----------------------------------------------------------------------------
 #Compute SI index
-st_area(st_intersection(hr37,hr38))/st_area(st_union(hr37,hr38))
+AIB <- mcphr |> 
+  st_intersection() |>
+  filter(n.overlaps == 2)
+
+st_area(AIB)/st_area(st_union(mcphr))
 
 ## -----------------------------------------------------------------------------
-deers <- GetSimultaneous(deer37,deer38,tc=7.5*60)
-deer37.sim <- deers[1]
-deer38.sim <- deers[2]
-deer37.sim
-deer38.sim
+deer37 <- deer[mt_track_id(deer) == '37',]
+deer38 <- deer[mt_track_id(deer) == '38',]
+deer_sim <- GetSimultaneous(deer37, deer38, tc = 7.5*60)
+table(deer$id)
+table(deer_sim$id)
 
 ## -----------------------------------------------------------------------------
-Prox(deer37, deer38, tc=7.5*60, dc=50)
+Prox(deer, tc=7.5*60, dc=50)
 
 ## -----------------------------------------------------------------------------
-Ca(deer37, deer38, tc=7.5*60, dc=50)
+Ca(deer, tc=7.5*60, dc=50)
 
 ## ----fig.align='center',fig.width=7-------------------------------------------
-Don(deer37,deer38, tc=7.5*60, dc=50)
+Don(deer, tc=7.5*60, dc=50)
 
 ## -----------------------------------------------------------------------------
-Lixn(deer37, deer38, method='spatial', tc=7.5*60, 
-     hr1=hr37, hr2=hr38)
+Lixn(deer, method='spatial', tc=7.5*60)
 
 ## -----------------------------------------------------------------------------
-Cs(deer37, deer38, tc=7.5*60)
+Cs(deer, tc=7.5*60)
 
 ## -----------------------------------------------------------------------------
-#compute overlap zone
-oz <- st_intersection(hr37, hr38)
-
-HAI(deer37, deer38, oz, tc=7.5*60, dc=50)
+HAI(deer, tc=7.5*60, dc=50)
 
 ## -----------------------------------------------------------------------------
-IAB(deer37, deer38, dc=50, tc=7.5*60)
+IAB(deer, dc=50, tc=7.5*60)
 
 ## -----------------------------------------------------------------------------
-Cr(deer37, deer38, tc=7.5*60)
+Cr(deer, tc=7.5*60)
 
 ## -----------------------------------------------------------------------------
-DI(deer37, deer38, tc=7.5*60)
+DI(deer, tc=7.5*60)
 
 ## ----fig.align='center',fig.width=7-------------------------------------------
-prox.df <- Prox(deer37, deer38, tc=7.5*60, dc=50, local=TRUE)
-plot(prox.df$date1,prox.df$prox,type="l")
+deer_prox <- Prox(deer, tc=7.5*60, dc=50, local=TRUE)
+plot(mt_time(deer_prox),deer_prox$prox,type="l")
 
 ## ----fig.align='center',fig.width=7-------------------------------------------
-df <- IAB(deer37, deer38, dc=50, tc=7.5*60, local=TRUE)
+df <- IAB(deer, dc=50, tc=7.5*60, local=TRUE)
 plot(df$date, df$Iab,type='l')
 
 ## -----------------------------------------------------------------------------
 #obtain the local di analysis data-frame
-di.df <- DI(deer37, deer38, tc=7.5*60, local=TRUE)
+di.df <- DI(deer, tc=7.5*60, local=TRUE)
 
 ## ----fig.align='center',fig.width=7-------------------------------------------
 #Examine the temporal dynamics of local di

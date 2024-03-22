@@ -340,7 +340,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1 class="title toc-ignore">wildlifeDI: Analysis of Dynamic Interaction
 Patterns in Wildlife Tracking Data</h1>
 <h4 class="author">Jed Long</h4>
-<h4 class="date">13 November, 2023</h4>
+<h4 class="date">22 March, 2024</h4>
 
 
 <div id="TOC">
@@ -411,9 +411,9 @@ measures of dynamic interaction are included in this suite of tools. In
 the following sections I will outline the functionality of each method,
 along with some guidelines and tips for where and when to use each
 method, and how to interpret results. These tools assume one has a
-working knowledge of the <code>adehabitat</code> package and classes
-(i.e., <code>ltraj</code> objects) used for working with movement data
-in R (Calenge 2006).</p>
+working knowledge of the <code>move2</code> package and classes (i.e.,
+<code>move2</code> objects) used for working with movement data in
+R.</p>
 <div id="some-terminology" class="section level2">
 <h2>Some Terminology</h2>
 <p>Before we go any further it is imperative that we clarify some
@@ -468,88 +468,61 @@ deer over a one week interval. These data are provided as part of the
 explored in the case study in Long <em>et al.</em> (2014). For more
 information on how the deer data was collected or for citation please
 see the papers by Webb <em>et al.</em> (2009, 2010).</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(wildlifeDI)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(deer)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>deer</span></code></pre></div>
-<pre><code>## 
-## *********** List of class ltraj ***********
-## 
-## Type of the traject: Type II (time recorded)
-## * Time zone unspecified: dates printed in user time zone *
-## Irregular traject. Variable time lag between two locs
-## 
-## Characteristics of the bursts:
-##   id burst nb.reloc NAs          date.begin            date.end
-## 1 37    37      551   0 2005-03-07 19:03:00 2005-03-13 18:47:00
-## 2 38    38      567   0 2005-03-07 19:02:00 2005-03-13 18:47:00
-## 
-## 
-##  infolocs provided. The following variables are available:
-## [1] &quot;pkey&quot;</code></pre>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(wildlifeDI)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(move2)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(adehabitatLT)</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="fu">data</span>(deer)</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>deer</span></code></pre></div>
+<pre><code>## A &lt;move2&gt; with `track_id_column` &quot;id&quot; and `time_column` &quot;date&quot;
+## Containing 2 tracks lasting on average 5.99 days in a
+## Simple feature collection with 1118 features and 2 fields
+## Geometry type: POINT
+## Dimension:     XY
+## Bounding box:  xmin: -96.40524 ymin: 34.76736 xmax: -96.38076 ymax: 34.7831
+## Geodetic CRS:  WGS 84
+## First 10 features:
+##                   date id                   geometry
+## 1  2005-03-07 19:03:00 37 POINT (-96.40058 34.77778)
+## 2  2005-03-07 19:17:00 37 POINT (-96.40034 34.77788)
+## 3  2005-03-07 19:33:00 37 POINT (-96.40034 34.77761)
+## 4  2005-03-07 19:47:00 37 POINT (-96.39992 34.77805)
+## 5  2005-03-07 20:02:00 37 POINT (-96.39999 34.77754)
+## 6  2005-03-07 20:17:00 37 POINT (-96.39766 34.77715)
+## 7  2005-03-07 20:33:00 37 POINT (-96.39794 34.77723)
+## 8  2005-03-07 20:47:00 37 POINT (-96.39813 34.77704)
+## 9  2005-03-07 21:02:00 37 POINT (-96.39804 34.77703)
+## 10 2005-03-07 21:47:00 37  POINT (-96.3981 34.77709)
+## Track features:
+##   id
+## 1 37
+## 2 38</code></pre>
 <p>As you can see, there are two individuals contained in this dataset,
 which are named based on their ids: <code>id = 37</code> and
 <code>id = 38</code>. The deer data represent the movement of these two
 individual deer over a one week period, with GPS fixes attempted at a 15
 minute interval.</p>
-<p>In order to utilize the tools, each individuals movement trajectory
-needs to be stored as a separate <code>ltraj</code> object, which is
-simple to do. Here we simply extract the 1st and 2nd bursts in order to
-extract separate <code>ltraj</code> objects for each individual.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>deer37 <span class="ot">&lt;-</span> deer[<span class="dv">1</span>]</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>deer37</span></code></pre></div>
-<pre><code>## 
-## *********** List of class ltraj ***********
-## 
-## Type of the traject: Type II (time recorded)
-## * Time zone unspecified: dates printed in user time zone *
-## Irregular traject. Variable time lag between two locs
-## 
-## Characteristics of the bursts:
-##   id burst nb.reloc NAs          date.begin            date.end
-## 1 37    37      551   0 2005-03-07 19:03:00 2005-03-13 18:47:00
-## 
-## 
-##  infolocs provided. The following variables are available:
-## [1] &quot;pkey&quot;</code></pre>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>deer38 <span class="ot">&lt;-</span> deer[<span class="dv">2</span>]</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>deer38</span></code></pre></div>
-<pre><code>## 
-## *********** List of class ltraj ***********
-## 
-## Type of the traject: Type II (time recorded)
-## * Time zone unspecified: dates printed in user time zone *
-## Irregular traject. Variable time lag between two locs
-## 
-## Characteristics of the bursts:
-##   id burst nb.reloc NAs          date.begin            date.end
-## 1 38    38      567   0 2005-03-07 19:02:00 2005-03-13 18:47:00
-## 
-## 
-##  infolocs provided. The following variables are available:
-## [1] &quot;pkey&quot;</code></pre>
 </div>
 <div id="checking-for-temporal-overlap" class="section level2">
 <h2>Checking for temporal overlap</h2>
 <p>Before embarking on analysis of dynamic interaction, it is worthwhile
-to check whether two telemetry datasets overlap temporally. This can be
-easily done using the <code>checkTO</code> function. The function tells
-us first if the two datasets overlap temporally (a necessary condition
-for spatial-temporal interaction), then it gives us the timings of the
-start and end of the overlap period.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">checkTO</span>(deer37,deer38)</span></code></pre></div>
-<pre><code>## $TO
-## [1] TRUE
-## 
-## $TOstart
-## [1] &quot;2005-03-07 19:03:00 EST&quot;
-## 
-## $TOend
-## [1] &quot;2005-03-13 18:47:00 EST&quot;</code></pre>
+to check whether individuals within a given telemetry dataset overlap
+temporally. This provides a list of potential “dyads” (i.e., pairs of
+individuals) and whether or not, and for how long, they overlap in time.
+This can be easily done using the <code>checkTO</code> function. The
+output tells us first if two individuals overlap temporally (a necessary
+condition for spatial-temporal interaction), then it gives us the
+timings of the start and end of the overlap period.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">checkTO</span>(deer)</span></code></pre></div>
+<pre><code>##   ID1 ID2   TO               t.min               t.max
+## 3  37  38 TRUE 2005-03-07 19:03:00 2005-03-13 18:47:00</code></pre>
 <p>Here we can clearly see that the two deer overlap for essentially the
 whole period, as these data were hand picked for this purpose. However,
 this will not always be the case, and thus <code>checkTO</code> can be a
-useful function for identifying if, and when, two telemetry datasets
-overlap temporally.</p>
+useful function for identifying if, and when, tracking datasets overlap
+temporally.</p>
 </div>
 <div id="static-interaction-analysis" class="section level2">
 <h2>Static interaction analysis</h2>
@@ -561,32 +534,35 @@ static interaction to investigate the potential for dynamic interactions
 to exist. Here we investigate the simpler case of proportion of home
 range overlap, to test for the potential for dynamic interaction between
 <code>deer37</code> and <code>deer38</code>. The proportion of overlap
-is calculated simply as: <span class="math display">\[
+is calculated simply as:</p>
+<p><span class="math display">\[
 \text{SI} = \frac{HR_\alpha \cap HR_\beta}{HR_\alpha \cup HR_\beta}
 \]</span> where HR refers to the corresponding home range area. To
 compute individual home ranges we will simply use the minimum convex
-polygon.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">#convert ltraj to sf points to compute mcp polygon</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>pts37 <span class="ot">&lt;-</span> <span class="fu">ltraj2sf</span>(deer37)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>pts38 <span class="ot">&lt;-</span> <span class="fu">ltraj2sf</span>(deer38)</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co">#compute mcp polygons</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>hr37 <span class="ot">&lt;-</span> <span class="fu">st_convex_hull</span>(<span class="fu">st_union</span>(pts37))</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>hr38 <span class="ot">&lt;-</span> <span class="fu">st_convex_hull</span>(<span class="fu">st_union</span>(pts38)) </span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co">#plot</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(hr38)</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(hr37,<span class="at">border=</span><span class="st">&quot;red&quot;</span>,<span class="at">add=</span>T)</span></code></pre></div>
-<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Compute SI index</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">st_area</span>(<span class="fu">st_intersection</span>(hr37,hr38))<span class="sc">/</span><span class="fu">st_area</span>(<span class="fu">st_union</span>(hr37,hr38))</span></code></pre></div>
-<pre><code>## [1] 0.6435784</code></pre>
+polygon (in real analysis it is important to carefully consider the home
+range method and how it is derived).</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">library</span>(sf)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>idcol <span class="ot">&lt;-</span> <span class="fu">mt_track_id_column</span>(deer)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>mcphr <span class="ot">&lt;-</span> deer <span class="sc">|&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="fu">group_by_at</span>(idcol) <span class="sc">|&gt;</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="fu">summarise</span>() <span class="sc">|&gt;</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="fu">st_convex_hull</span>()</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(mcphr),<span class="at">border=</span><span class="fu">c</span>(<span class="st">&quot;red&quot;</span>,<span class="st">&quot;black&quot;</span>))</span></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co">#Compute SI index</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>AIB <span class="ot">&lt;-</span> mcphr <span class="sc">|&gt;</span> </span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="fu">st_intersection</span>() <span class="sc">|&gt;</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="fu">filter</span>(n.overlaps <span class="sc">==</span> <span class="dv">2</span>)</span></code></pre></div>
+<pre><code>## although coordinates are longitude/latitude, st_intersection assumes that they
+## are planar</code></pre>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">st_area</span>(AIB)<span class="sc">/</span><span class="fu">st_area</span>(<span class="fu">st_union</span>(mcphr))</span></code></pre></div>
+<pre><code>## 0.643579 [1]</code></pre>
 <p>Here we can see there is substantial overlap in home ranges between
 these two individuals, and thus some would suggest that this may be
 evidence of likely dynamic interaction, which is what we will explore
-further. NOTE: The MCP home ranges we have computed here (saved as the
-objects <code>hr37</code> and <code>hr38</code>) will be used in later
-analysis.</p>
+further. NOTE: The MCP home ranges we have computed here can be used in
+later analysis.</p>
 </div>
 <div id="obtaining-simultaneous-fixes---t_alphabeta" class="section level2">
 <h2>Obtaining Simultaneous Fixes - T<span class="math inline">\(_{\alpha\beta}\)</span></h2>
@@ -595,60 +571,40 @@ of those fixes that are deemed to be simultaneous in time (T<span class="math in
 tolerance threshold - <span class="math inline">\(t_c\)</span>. As this
 is rarely the case in real datasets, the function
 <code>GetSimultaneous</code> was developed to extract simultaneous fixes
-from two movement datasets. The tolerance parameter (<span class="math inline">\(t_c\)</span>) can be used to allow the times to
-deviate slightly and still be considered simultaneous. Note that that
-<code>ltraj</code> objects, despite displaying date-time formats,
-measure times in seconds and thus the <span class="math inline">\(t_c\)</span> argument is given in seconds. The
-documentation for the <code>GetSimultaneous</code> function tells us to
-pass in two trajectories, and a <code>tc</code> argument. In this
-example we will use 7.5 minutes as <span class="math inline">\(t_c\)</span>, which is 1/2 the sampling interval
+from two individuals in a tracking dataset. The Function
+<code>GetSimultaneous</code> is used internally with most methods, so it
+is generally not used on its own, however it can be useful to obtain
+simultaneous fixes for other analyses, which is why it is included
+here.</p>
+<p>The tolerance parameter (<span class="math inline">\(t_c\)</span>)
+can be used to allow the times to deviate slightly and still be
+considered simultaneous. Note that that <code>move2</code> objects,
+despite displaying date-time formats, measure times in seconds and thus
+the <span class="math inline">\(t_c\)</span> argument is given in
+seconds. The documentation for the <code>GetSimultaneous</code> function
+tells us to pass in two trajectories, and a <code>tc</code> argument. In
+this example we will use 7.5 minutes as <span class="math inline">\(t_c\)</span>, which is 1/2 the sampling interval
 (which is generally a good starting point) of 15 minutes. This means
 that any two fixes that are within 7.5 minutes of each-other are deemed
 simultaneous. The result of the <code>GetSimultaneous</code> function is
-a list with two <code>ltraj</code> objects which can be extracted.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>deers <span class="ot">&lt;-</span> <span class="fu">GetSimultaneous</span>(deer37,deer38,<span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>deer37.sim <span class="ot">&lt;-</span> deers[<span class="dv">1</span>]</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>deer38.sim <span class="ot">&lt;-</span> deers[<span class="dv">2</span>]</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>deer37.sim</span></code></pre></div>
+a <code>move2</code> object with the two individuals which can be
+extracted.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>deer37 <span class="ot">&lt;-</span> deer[<span class="fu">mt_track_id</span>(deer) <span class="sc">==</span> <span class="st">&#39;37&#39;</span>,]</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>deer38 <span class="ot">&lt;-</span> deer[<span class="fu">mt_track_id</span>(deer) <span class="sc">==</span> <span class="st">&#39;38&#39;</span>,]</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>deer_sim <span class="ot">&lt;-</span> <span class="fu">GetSimultaneous</span>(deer37, deer38, <span class="at">tc =</span> <span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="fu">table</span>(deer<span class="sc">$</span>id)</span></code></pre></div>
 <pre><code>## 
-## *********** List of class ltraj ***********
-## 
-## Type of the traject: Type II (time recorded)
-## * Time zone unspecified: dates printed in user time zone *
-## Irregular traject. Variable time lag between two locs
-## 
-## Characteristics of the bursts:
-##   id burst nb.reloc NAs          date.begin            date.end
-## 1 37    37      546   0 2005-03-07 19:03:00 2005-03-13 18:47:00
-## 
-## 
-##  infolocs provided. The following variables are available:
-## [1] &quot;pkey&quot;</code></pre>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>deer38.sim</span></code></pre></div>
+##  37  38 
+## 551 567</code></pre>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="fu">table</span>(deer_sim<span class="sc">$</span>id)</span></code></pre></div>
 <pre><code>## 
-## *********** List of class ltraj ***********
-## 
-## Type of the traject: Type II (time recorded)
-## * Time zone unspecified: dates printed in user time zone *
-## Irregular traject. Variable time lag between two locs
-## 
-## Characteristics of the bursts:
-##   id burst nb.reloc NAs          date.begin            date.end
-## 1 38    38      546   0 2005-03-07 19:02:00 2005-03-13 18:47:00
-## 
-## 
-##  infolocs provided. The following variables are available:
-## [1] &quot;pkey&quot;</code></pre>
-<p>As you can now see, these trajectories have an equal number
-(<code>nb.reloc = 546</code>) of simultaneous fixes based on the
-supplied <span class="math inline">\(t_c\)</span> value of 7.5 minutes.
-Also, recall that in the original data <code>deer37</code> and
-<code>deer38</code> contained 551 and 567 fixes, respectively. However,
-as we just demonstrated only 546 of these fixes were deemed to be
-simultaneous. The Function <code>GetSimultaneous</code> is used
-internally with most methods, so it is generally not used on its own,
-however it can be useful to obtain simultaneous fixes for other
-analyses, which is why it is included here.</p>
+##  37  38 
+## 546 546</code></pre>
+<p>As you can now see, these trajectories have an equal number (n=546)
+of simultaneous fixes based on the supplied <span class="math inline">\(t_c\)</span> value of 7.5 minutes. Also, recall
+that in the original data <code>deer37</code> and <code>deer38</code>
+contained 551 and 567 fixes, respectively. However, as we just
+demonstrated only 546 of these fixes were deemed to be simultaneous.</p>
 </div>
 </div>
 <div id="measuring-dynamic-interaction" class="section level1">
@@ -658,22 +614,21 @@ analyses, which is why it is included here.</p>
 <p>Here I have defined dynamic interaction analysis as being one of
 either <em>global</em> or <em>local</em>. Some global statistics have a
 local alternative so will be discussed in both sections. Global analysis
-generates a single output statistic for the entire dataset (i.e., pair
-of individuals), while local analysis generates an output statistic at
-every single point in the dataset, defined here as simultaneous
-fixes.</p>
+generates a single output statistic for the entire dataset (i.e., per
+dyad), while local analysis generates an output statistic at every
+single point in the dataset, defined here as simultaneous fixes.</p>
 <div id="prox---proximity-analysis" class="section level3">
 <h3>Prox - Proximity analysis</h3>
 <p>Proximity analysis (see Bertrand et al. 1996) can be a useful, simple
 way to examine attraction in wildlife telemetry studies. Of interest is
 determining the proportion of the T<span class="math inline">\(_{\alpha\beta}\)</span> (simultaneous fixes) that
 are ST<span class="math inline">\(_{\alpha\beta}\)</span> (simultaneous
-and proximal fixes) based on the given distance threshold <span class="math inline">\(d_c\)</span>. It is simply calculated as: <span class="math display">\[
+and proximal fixes) based on the given distance threshold <span class="math inline">\(d_c\)</span>. It is simply calculated as:</p>
+<p><span class="math display">\[
 \text{Prox} = \frac{T_{\alpha\beta}}{ST_{\alpha\beta}}
-\]</span> Further, it can be useful to measure the variability in
-proximity through time. Thus, simply creating a time-series graphic of
-<span class="math inline">\(d_{\alpha\beta}\)</span> can be of
-interest.</p>
+\]</span></p>
+<p>Further, it can be useful to measure the variability in proximity
+through time. Thus, simply creating a time-series graphic of <span class="math inline">\(d_{\alpha\beta}\)</span> can be of interest.</p>
 <p>The function <code>Prox</code> can be used to implement proximity
 analysis in R. It requires that the user define <span class="math inline">\(t_c\)</span> to be passed to the function
 <code>GetSimultaneous</code>. The <code>Prox</code> function also
@@ -682,8 +637,9 @@ threshold at which fixes are proximal. Throughout this analysis we use a
 <span class="math inline">\(t_c\)</span> of 7.5 minutes and <span class="math inline">\(d_c\)</span> of 50 meters. Note: the spatial
 coordinates of the deer data are stored in UTM format making meters the
 appropriate spatial unit.</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Prox</span>(deer37, deer38, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>, <span class="at">dc=</span><span class="dv">50</span>)</span></code></pre></div>
-<pre><code>## [1] 0.4139194</code></pre>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">Prox</span>(deer, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>, <span class="at">dc=</span><span class="dv">50</span>)</span></code></pre></div>
+<pre><code>##   ID1 ID2   TO               t.min               t.max      prox
+## 3  37  38 TRUE 2005-03-07 19:03:00 2005-03-13 18:47:00 0.4139194</code></pre>
 <p><em>Interpretation:</em> Here the Prox statistic is 0.4139, an
 indication that there is definitely attraction by this pair. A Prox
 value of 0.4139 means that <span class="math inline">\(41.39\%\)</span>
@@ -701,11 +657,13 @@ simply calculated as: <span class="math display">\[
 number of fixes in <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span> respectively. It has been suggested
 in the literature that a cut-off of 0.5 can be used to identify
 attraction (Ca <span class="math inline">\(&gt; 0.5\)</span>) and
-avoidance (Ca <span class="math inline">\(&lt; 0.5\)</span>).</p>
+avoidance (Ca <span class="math inline">\(&lt; 0.5\)</span>). The Ca
+statistic is sometimes referred to the Simple Ratio Index.</p>
 <p>The function <code>Ca</code> can be used to implement the Ca
 statistic in R. Again, we use threshold values of <span class="math inline">\(t_c\)</span> = 7.5 minutes and <span class="math inline">\(d_c\)</span> = 50 meters.</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Ca</span>(deer37, deer38, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>, <span class="at">dc=</span><span class="dv">50</span>)</span></code></pre></div>
-<pre><code>## [1] 0.4042934</code></pre>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="fu">Ca</span>(deer, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>, <span class="at">dc=</span><span class="dv">50</span>)</span></code></pre></div>
+<pre><code>##   ID1 ID2   TO               t.min               t.max        Ca
+## 3  37  38 TRUE 2005-03-07 19:03:00 2005-03-13 18:47:00 0.4042934</code></pre>
 <p><em>Interpretation:</em> Here the Ca statistic is 0.4043, an
 indication that there is moderate attraction by this pair. However, the
 Ca value is not <span class="math inline">\(&gt; 0.5\)</span> and we
@@ -741,16 +699,12 @@ distances, and the <span class="math inline">\(\chi^2\)</span> test
 result. Significant <span class="math inline">\(\chi^2\)</span> values
 are indicative of attraction, while non-significant results suggest
 indifference.</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Don</span>(deer37,deer38, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>, <span class="at">dc=</span><span class="dv">50</span>)</span></code></pre></div>
-<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
-<pre><code>## $conTable
-##            below.crit above.crit Totals
-## Paired            226        320    546
-## Non-Paired       3925     293637 297570
-## Totals           4159     293957 298116
-## 
-## $p.value
-## [1] 0</code></pre>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="fu">Don</span>(deer, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>, <span class="at">dc=</span><span class="dv">50</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<pre><code>##   ID1 ID2   TO               t.min               t.max paired_lt_dc
+## 3  37  38 TRUE 2005-03-07 19:03:00 2005-03-13 18:47:00          226
+##   paired_gt_dc unpaired_lt_dc unpaired_gt_dc p_value
+## 3          320           3934         293636       0</code></pre>
 <p><em>Interpretation:</em> The graph of the count of observed (black
 dots) vs. expected (grey line) fix distances, for a range of distance
 intervals, suggests that there may be some attraction at lower distance
@@ -819,61 +773,34 @@ make statistical inferences on the (L<span class="math inline">\(_{AA}\)</span>,
 <span class="math inline">\(t_c\)</span> to be passed to the function
 <code>GetSimultaneous</code> internally. If
 <code>method=&quot;spatial&quot;</code> the user is required to input the
-home-ranges, stored as a <code>SpatialPolygons*</code> object for each
-individual. If <code>method=&quot;frequency&quot;</code> the user is required to
-pass in the overlap zone (<code>OZ</code>), stored as a
-<code>SpatialPolygons*</code> object. Here we use the home ranges,
-previously calculated in section 2.1 (i.e., the objects hr37 and hr38),
-which will be passed into the <code>Lixn</code> function. Along with the
-L<span class="math inline">\(_{AA}\)</span>, L<span class="math inline">\(_{BB}\)</span>, and L<span class="math inline">\(_{ixn}\)</span> statistics and their associated
+home-ranges, stored as a <code>sf</code> object with an ID column for
+each individual. If <code>method=&quot;spatial&quot;</code> and no home-ranges are
+provided, the default is to use the minimum-convex polygon. If
+<code>method=&quot;frequency&quot;</code> the user is required to pass in the
+overlap zone (<code>OZ</code>), stored as a <code>sf</code> object. Here
+we use the default minimum convex polygon home ranges but users should
+carefully consider these choices as they can substantially influence the
+results. Along with the L<span class="math inline">\(_{AA}\)</span>,
+L<span class="math inline">\(_{BB}\)</span>, and L<span class="math inline">\(_{ixn}\)</span> statistics and their associated
 <em>p</em>-values, the function returns contingency tables for the
 expected probabilities, observed values, and odds depicting the
 simultaneous and solitary use of the shared area by each individual.</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Lixn</span>(deer37, deer38, <span class="at">method=</span><span class="st">&#39;spatial&#39;</span>, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>, </span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">hr1=</span>hr37, <span class="at">hr2=</span>hr38)</span></code></pre></div>
-<pre><code>## $pTable
-##           A           b
-## B 0.6423984 0.003342149
-## b 0.3524259 0.001833535
-## 
-## $nTable
-##     A  b
-## B 481 10
-## b  55  0
-## 
-## $oTable
-##           A        b
-## B 1.3713489 5.480012
-## b 0.2858263 0.000000
-## 
-## $Laa
-## [1] -1.277045
-## 
-## $p.AA
-## [1] 1.879819e-05
-## 
-## $Lbb
-## [1] 1.588743
-## 
-## $p.BB
-## [1] 0
-## 
-## $Lixn
-## [1] -1.436156
-## 
-## $p.IXN
-## [1] 0.0004248804</code></pre>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="fu">Lixn</span>(deer, <span class="at">method=</span><span class="st">&#39;spatial&#39;</span>, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>)</span></code></pre></div>
+<pre><code>##   ID1 ID2   TO               t.min               t.max       Laa         p.aa
+## 3  37  38 TRUE 2005-03-07 19:03:00 2005-03-13 18:47:00 -1.284545 2.657452e-11
+##        Lbb p.bb      Lixn        p.ixn notes
+## 3 1.600961    0 -1.441519 0.0004205525    NA</code></pre>
 <p><em>interpretation:</em> Interpretation of the results is dependent
-on the derivation of home ranges (here MCP). L<span class="math inline">\(_{AA}\)</span> is negative adn significant,
+on the derivation of home ranges (here MCP). L<span class="math inline">\(_{AA}\)</span> is negative and significant,
 whereas L<span class="math inline">\(_{BB}\)</span> is <span class="math inline">\(&gt; 0\)</span> and significant (<em>p</em>-values
 <span class="math inline">\(&lt; 0.05\)</span>). The positive and
 significant values suggest that deer38 is attracted to the shared-area
 (the overlap area of the home ranges). The value for L<span class="math inline">\(_{ixn}\)</span> is negative, suggesting no
 evidence of simultaneous use of the shared area, and this value is
 significant. The negative L<span class="math inline">\(_{ixn}\)</span>
-result here is a funciton of the MCP home ranges and the fact that using
-this home range method, deer37s home range is nearly encompasssed by
-deer 38s. Making this particular example difficult to interpret.</p>
+result here is a function of the MCP home ranges and the fact that using
+this home range method, deer 37’s home range is nearly encompassed by
+deer 38’s. Making this particular example difficult to interpret.</p>
 </div>
 <div id="cs---coefficient-of-sociality" class="section level3">
 <h3>Cs - Coefficient of sociality</h3>
@@ -890,21 +817,11 @@ rather than relying on the more subjective interpretation.</p>
 which produces output giving the observed and expected fix distances,
 the Cs value, and one-sided <em>p</em>-values resulting from the Wilcox
 signed-rank test for significant attraction and avoidance.</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Cs</span>(deer37, deer38, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>)</span></code></pre></div>
-<pre><code>## $Do
-## [1] 422.3163
-## 
-## $De
-## [1] 873.9819
-## 
-## $Cs
-## [1] 0.3484272
-## 
-## $p.Attract
-## [1] 7.403068e-53
-## 
-## $p.Avoid
-## [1] 1</code></pre>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="fu">Cs</span>(deer, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>)</span></code></pre></div>
+<pre><code>##   ID1 ID2   TO               t.min               t.max      Do       De
+## 3  37  38 TRUE 2005-03-07 19:03:00 2005-03-13 18:47:00 421.967 873.0056
+##          Cs    p.attract p.avoid
+## 3 0.3482997 8.044349e-53       1</code></pre>
 <p><em>interpretation:</em> First, we see that the Cs statistic (Cs =
 0.3484) is definitely above 0, although it is closer to 0 than 1. From
 here, we can use the significant test to aid our interpretation, we can
@@ -934,18 +851,15 @@ avoidance.</p>
 Like Ca, HAI requires that the user input values for the thresholds
 <span class="math inline">\(t_c\)</span> and <span class="math inline">\(d_c\)</span>, but also like Lixn that the user
 provide a polygon for defining the overlap zones. The overlap zone (OZ)
-must be a <code>SpatialPolygons*</code> object. The output is simply the
-value of the HAI statistic, which can be interpreted identically to Ca,
-that is a cut-off of 0.5 can be used to identify attraction (HAI <span class="math inline">\(&gt; 0.5\)</span>) and avoidance (HAI <span class="math inline">\(&lt; 0.5\)</span>).</p>
-<p>Below we use the package <code>rgeos</code> and the function
-<code>gIntersection</code> to compute the intersection between the two
-deer home ranges and delineate the overlap zone, stored as object
-<code>oz</code>.</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co">#compute overlap zone</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>oz <span class="ot">&lt;-</span> <span class="fu">st_intersection</span>(hr37, hr38)</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="fu">HAI</span>(deer37, deer38, oz, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>, <span class="at">dc=</span><span class="dv">50</span>)</span></code></pre></div>
-<pre><code>## [1] 0.2619048</code></pre>
+must be a <code>sf</code> object. If no OZ is specified the default is
+to take the intersection of the two minimum convex polygon homeranges.
+The output is simply the value of the HAI statistic, which can be
+interpreted identically to Ca, that is a cut-off of 0.5 can be used to
+identify attraction (HAI <span class="math inline">\(&gt; 0.5\)</span>)
+and avoidance (HAI <span class="math inline">\(&lt; 0.5\)</span>).</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="fu">HAI</span>(deer, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>, <span class="at">dc=</span><span class="dv">50</span>)</span></code></pre></div>
+<pre><code>##   ID1 ID2   TO               t.min               t.max       hai
+## 3  37  38 TRUE 2005-03-07 19:03:00 2005-03-13 18:47:00 0.2600733</code></pre>
 <p><em>interpretation:</em> Here we see that HAI is 0.2942, which
 suggests there is little evidence of attraction in the shared area of
 the home range (HAI <span class="math inline">\(&lt; 0.5\)</span>). In
@@ -975,18 +889,11 @@ is based. That is, a wrapped shifting method is used to maintain the
 serial correlation structure implicit to the movement data. At each
 shift, a sample statistic (termed MAB) is computed to generate the
 distribution of values for the test statistic.</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">IAB</span>(deer37, deer38, <span class="at">dc=</span><span class="dv">50</span>, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>)</span></code></pre></div>
-<pre><code>## $IAB.obs
-## [1] 0.3986007
-## 
-## $IAB.exp
-## [1] 0.01694352
-## 
-## $P.attract
-## [1] 0.001831502
-## 
-## $P.avoid
-## [1] 1</code></pre>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="fu">IAB</span>(deer, <span class="at">dc=</span><span class="dv">50</span>, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>)</span></code></pre></div>
+<pre><code>##   ID1 ID2   TO               t.min               t.max   IAB.obs    IAB.exp
+## 3  37  38 TRUE 2005-03-07 19:03:00 2005-03-13 18:47:00 0.3986239 0.01695147
+##     p.attract p.avoid
+## 3 0.001831502       1</code></pre>
 <p><em>Interpretation:</em> Here we can see that the IAB test suggests
 significant attraction (<span class="math inline">\(p = 0.0018\)</span>)
 and conversely no avoidance, which would be expected. The IAB statistic
@@ -1010,8 +917,9 @@ respect to the other individual. It is important to note that Cr does
 not account for the distance between the two individuals at any point in
 its derivation, thus it is up to the analyst to infer whether the
 correlations measured are in fact meaningful.</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Cr</span>(deer37, deer38, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>)</span></code></pre></div>
-<pre><code>## [1] 0.3706059</code></pre>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="fu">Cr</span>(deer, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>)</span></code></pre></div>
+<pre><code>##   ID1 ID2   TO               t.min               t.max        Cr
+## 3  37  38 TRUE 2005-03-07 19:03:00 2005-03-13 18:47:00 0.3639908</code></pre>
 <p><em>interpretation:</em> A Cr value of 0.3706 indicates that there is
 some evidence for cohesive behaviour. Specifically, we interpret Cr like
 a correlation coefficient. It is difficult to know in this case if the
@@ -1025,11 +933,11 @@ behaviour to occur from Thursday to Sunday.</p>
 (2013) is similar to the Cr statistic in that it uses path based
 analysis. The DI index attempts to measure cohesiveness in two
 independent components of movement: direction (often termed azimuth) and
-speed (generally measured using segment displacements). The DI index
-includes two main differences from the Cr statistic in its formulation;
-1) DI does not depend on the respective path mean vectors, and 2) DI can
-disentangle the independent effects of correlation in direction and
-speed.</p>
+speed (generally measured using segment displacements, i.e., step
+length). The DI index includes two main differences from the Cr
+statistic in its formulation; 1) DI does not depend on the respective
+path mean vectors, and 2) DI can disentangle the independent effects of
+correlation in direction and speed.</p>
 <p><span class="math display">\[
 \text{di}_t = \left(1 - \left(\frac{\lvert d^\alpha_t - d^\beta_t
 \rvert}{d^\alpha_t + d^\beta_t}\right)^\delta\right) \times
@@ -1045,21 +953,11 @@ for segment <span class="math inline">\(t\)</span>. The parameter <span class="m
 displacement component (denoted as <span class="math inline">\(\alpha\)</span> in Long and Nelson 2013).</p>
 <p>Calculation of DI is computed via the function <code>DI</code>. The
 <code>DI</code> function outputs the value of the DI (along with DI<span class="math inline">\(_{\theta}\)</span> and DI<span class="math inline">\(_d\)</span>).</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">DI</span>(deer37, deer38, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>)</span></code></pre></div>
-<pre><code>## $DI
-## [1] 0.1510688
-## 
-## $DI.theta
-## [1] 0.1735282
-## 
-## $DI.d
-## [1] 0.5910381
-## 
-## $P.positive
-## [1] 0.001834862
-## 
-## $P.negative
-## [1] 1</code></pre>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a><span class="fu">DI</span>(deer, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>)</span></code></pre></div>
+<pre><code>##   ID1 ID2   TO               t.min               t.max        DI  DI.theta
+## 3  37  38 TRUE 2005-03-07 19:03:00 2005-03-13 18:47:00 0.1510805 0.1735302
+##        DI.d
+## 3 0.5910897</code></pre>
 <p><em>interpretation:</em> Here we see the global DI value that is
 close to zero (DI=0.1511), suggesting there is little cohesion in the
 movements of the two deer. From the two other metrics, we can see that
@@ -1092,9 +990,9 @@ Euclidean distance) between each simultaneous fix. This is done in the
 function <code>Prox</code> by setting the option
 <code>local = TRUE</code>; the output is a <code>dataframe</code> for
 easy further manipulation.</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>prox.df <span class="ot">&lt;-</span> <span class="fu">Prox</span>(deer37, deer38, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>, <span class="at">dc=</span><span class="dv">50</span>, <span class="at">local=</span><span class="cn">TRUE</span>)</span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(prox.df<span class="sc">$</span>date1,prox.df<span class="sc">$</span>prox,<span class="at">type=</span><span class="st">&quot;l&quot;</span>)</span></code></pre></div>
-<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a>deer_prox <span class="ot">&lt;-</span> <span class="fu">Prox</span>(deer, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>, <span class="at">dc=</span><span class="dv">50</span>, <span class="at">local=</span><span class="cn">TRUE</span>)</span>
+<span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">mt_time</span>(deer_prox),deer_prox<span class="sc">$</span>prox,<span class="at">type=</span><span class="st">&quot;l&quot;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
 <p><em>Interpretation:</em> We can use this time-series plot of
 proximity to examine the local-scale variation in proximity between the
 two deer. For instance, it appears the two deer remained close together
@@ -1106,9 +1004,9 @@ associated with attraction behaviour.</p>
 <h3>IAB index</h3>
 <p>Here I have also implemented a local version of the analysis, so that
 the temporal variation in the IAB index can be graphed through time.</p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">IAB</span>(deer37, deer38, <span class="at">dc=</span><span class="dv">50</span>, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>, <span class="at">local=</span><span class="cn">TRUE</span>)</span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(df<span class="sc">$</span>date, df<span class="sc">$</span>Iab,<span class="at">type=</span><span class="st">&#39;l&#39;</span>)</span></code></pre></div>
-<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">IAB</span>(deer, <span class="at">dc=</span><span class="dv">50</span>, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>, <span class="at">local=</span><span class="cn">TRUE</span>)</span>
+<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a><span class="fu">plot</span>(df<span class="sc">$</span>date, df<span class="sc">$</span>Iab,<span class="at">type=</span><span class="st">&#39;l&#39;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
 <p><em>Interpretation:</em> The local IAB analysis further corroborates
 the timing of interactive behaviour observed using the local Prox
 analysis and the local di statistic. Here we can see that the strongest
@@ -1135,11 +1033,11 @@ Nelson (2013).Much like with Prox, in order to further examine local
 level dynamics in the cohesiveness of movement, a time-series plot of di
 can be used to identify temporal trends in cohesive movement
 behaviour.</p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co">#obtain the local di analysis data-frame</span></span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>di.df <span class="ot">&lt;-</span> <span class="fu">DI</span>(deer37, deer38, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>, <span class="at">local=</span><span class="cn">TRUE</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Examine the temporal dynamics of local di</span></span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(di.df<span class="sc">$</span>date, di.df<span class="sc">$</span>di,<span class="at">type=</span><span class="st">&quot;l&quot;</span>)</span></code></pre></div>
-<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a><span class="co">#obtain the local di analysis data-frame</span></span>
+<span id="cb35-2"><a href="#cb35-2" tabindex="-1"></a>di.df <span class="ot">&lt;-</span> <span class="fu">DI</span>(deer, <span class="at">tc=</span><span class="fl">7.5</span><span class="sc">*</span><span class="dv">60</span>, <span class="at">local=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a><span class="co">#Examine the temporal dynamics of local di</span></span>
+<span id="cb36-2"><a href="#cb36-2" tabindex="-1"></a><span class="fu">plot</span>(di.df<span class="sc">$</span>date, di.df<span class="sc">$</span>di,<span class="at">type=</span><span class="st">&quot;l&quot;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAqAAAAEgCAMAAABcujGyAAAAb1BMVEUAAAAAADoAAGYAOpAAZmYAZrY6AAA6ADo6AGY6kNtmAABmADpmAGZmOpBmZgBmkJBmtv+QOgCQOjqQZgCQkGaQtpCQ2/+2ZgC225C2/7a2/9u2///bkDrb25Db/7bb////tmb/25D//7b//9v///8LvynRAAAACXBIWXMAAA7DAAAOwwHHb6hkAAATX0lEQVR4nO3djWLbthUF4Jt0Tmtn3eKti9fFW2QZ7/+ME0UBuPgjAIIgL+RztjoSRQIg8ImUKIkkhSCCQ0c3AEGWAqCI6AAoIjoAiogOgCKiA6CI6AAoIjoAiogOgCKiA6CI6AAoIjoAiogOgCKiA6CI6AAoIjoAiogOgCKiA6CI6AAoIjoAiogOgCKiA6CI6AAoIjoAiogOgCKiA6CI6AAoIjoAiogOgCKiA6CI6AAoIjoAiogOgCKiA6CI6AAoIjoAiogOgCKiA6CI6AAoIjoAiogOgCKiA6CI6AAoIjoAiogOgCKiA6CI6AAoIjoAiogOgCKiA6CI6AAoIjoAiogOgCKiA6CI6AAoIjoAiogOgCKiA6CI6AAoIjoAiogOgCKiA6CI6AAoIjoAiogOgCKiA6CI6AAoIjoAiogOgCKiA6CI6AAoIjp1QN+f6ZrPPzo1B0HcVAF9pcf5xknfQJC+qQH6/mxYvv7ys0NjEMRPDdDz0zd984SdPLJLsAVFRKfyNehtE4rXoMhOqXsXf36a38Unt5+EIEXpA3Tv4pB7DYAiotMb6GviXTyAIkXZeQta/9JCbo5chUO7b9fK72QXf8SAbVknZUr0H6l6gsfmXagqVzTV1d4YABVR52qgJVau81A4KVGTKXqhLfv1N4CuLnpzoLRUVwQYLS5D4cze8rFFyRSZNEyqE9JogQC6uujWvWzw+BJQ8oFRBiitATqXNld2z0D1Yfop+7yL7wWUtgEaIeIWcdtw7Qk0tmpkynRfaJI7Ux+g8WdEny3o+3PuOyIfDOhNRLIIsuTiBbQCDZavAGrqsLv+0YFehD5sWVw2soFegcT63zGwXFcIVEtxN2/k34gBTT0fdDUcKMWAKqL0a4B84hR3fQ16om+Lj989UHL4qXj/+xupVqBsOx0A1fRuxdUBdWmqOwAqqbiGujYEmtvFLxZZBpTveNkSALoi+eKqKjwAaGZ8GoGSP98hQInd1o+GQOv7F0DXlxQsKhEobQTUb1ISqLnVE2h0MoDmyu0ANBzazYE61XcAqkqBFm8WE10NoJly08er7xio3kDWAY36+mBAk1ra6lpY9B6B6vsA2lJcOEdiFbLFyQRKfBL5nz0GQJ0pVUDJgNQP1wJlVAF0YQ4A5bMTgK6bcavidgKaY5Y8vr4dUOsnA9Tx3AUo2RsAWj1HrEtLiusMNF5CLVBWcFhoFGgwlS+5ANTeLwFKHYDGJ0ampSc3zLhVcR8AKEMjAqjzQWkDUFZsMdDUOAwHNMkhXXAdUHLveBUyQmuB3ka8Hag1GjRuK6BUC9RvPID6M1O49OKrxTxQCh7tBjQ6xnayM/tKoFQE1DSSALR8jmqg+vZCZeFjGwJ157Ct6QtUL58EOjPbEqhdwbVAk0MEoIv1hkDtKNQC1cO4L1C+xbS1A2h7cSMBjVQAoLa/VHKiijxa+MDqGduLo8QcRwIlXhYRX7IWqMFBzUDt04WtdAyo4cSBkt9uAC0rLgk02J5FijsAaDDQt2L6AlXm6eoa6ADUlLcpUK+jE9kZaNGpb4YDGqugBiiVAQ081wBVbl2lQNVgQM9Pj+Y3xU0n914NNL4kB2rXHkCjQPWihUBZeUmgph0JoO64Cd6CFhW3Cqj3dB4NKJszAVSRlbYE1Cx/BNCA3hJQXvvdA/X3N8VAg/JcoLQeKG0D1E5aA5RIz18E1Gn+rSoL3anb7QBdydFAC84ZUlPcwmORQa8AyjsqsYhKPLgAVI+ADzRWwS5AvXnzQK3KjYHaTa5XzgFb0PnCCKdP30sXra13PKCxzX0TULb2WwG9FcR2BRsBpUagpnHR1APVJw1pu8DMIlBviNj0BNDgLWUp0IitDFBXqX4o1tg8UBWMXlB4X6Beu9cDNQskgVIwsRdQfZWutkt0rQB6e5YuA6U+QO3wRIBGV2d7oEoqUN3kaOP1eOwHVF+l62XPLahG0hso8YqpA1DKA3UbsQyU/3Mg0NsKLwBVAVAzaWugt9MuvXZ8DboANL6k+3Q2vdgGlDJAXXfhSiwC1f+7VeQCpS2Bms7MAiXn9q5AF0eoLGzG61v5xksc1gClFFA2MlsCtUMoC6iuPfbsZTeWgSq7dlmgZAoYC+gWAdDxgbr96wF157pXoKbHa4Aqp6NSL1tNCRmgamOgptCVQP2XqG43mL/ygDqjpdhKbgz0+t7o9dKa5fN/lhYXfcyMv1Sg5o9uRRVQPfoW0T5A6SMAvb43mg7Sv31pEioPqBlX4h1ngJr/E7tlG0H2pl6JGFCqBkpuGyOuAJTNeH560Ifqexxmsi0+BCgJAEoMqNcPyl0s1g28KW1AbScWAlXLQN3R6gb0hXjS14J/f57nSB7MLwJq+mJfoLYZphHM5BJQ3rZRgFJYjmmsKcAApQAo768CoKyb+XIqlUqg56dH/TH80hb0Vds9pRD3AUouUNOnyTYEQKkZqAFQAdRdkSxQb33agZJbjmksa5wP1PSTLKDq5fOPeQ+fpKfsh00q/Yn99kDtLOSMpAXq11kO1BhNAtVV5YDqNeFDlAbKqmNNIm9FTPHrgFopfud0BWpbuinQaSc/v49P+zQf16v0J/bFQPnTvBCoMluoDFAOaiugdvwKgTri7ggoOaWYJnUHWpLWLaheiwCo3ejMM1oBfLsZAGV7TKc2D6ixsRKoeR+r2a0GSh2B8qJqgLJOcW75/RUC5R0YAxquUbhy+cwzXraN56/5D+Ff9VHSda9BF4HaVWsESs4ueQZFFmQIlEzDGFDiy0eAcl5FQE1J1UCJ3fWA2tLMQgyo2Ui6hVYCdXrcBcqaFAeqkqkG+lgC1HzzPvlGajegZHugEKieVgSUbSZvn2BWAyU+QLQdUNa+GNDwCbIaKGt8BqjTgz2AXj9DoswhpIriYlPt+LMhVCuBkt4mhXX6vcT27w5Qrkp3ve1mf3zY88JSZhUyoCoGVBnqlUDN5K2BmqpNC5xbwoBeNo4lW9Dy4oKpbPzdbYwD1O0bDlS5tKqAWozKZW7vumzWAbVY7hmoWb80UGIVJVIPtC6v1e/iSa+I2RHuAdTZAh8MVPlAya2hDigrNQFU17AI1DZcNNDWX3XapROVEB//dqDkAiWnrmKg/K4PlI/5LkApGM9moPwPK3RzoKxvegGd0vFXnZaDcoHYd8hpoMT7TL9jMbj0X6/DlXkkCzTc8ZqevpWkn1IOUOI1lQJVTk3rgfJtYw6oW+oaoPoJabcGRwDt+avOKqDurHr3ZxY10xQH6nAx/5IzBwdqq9kIKK90X6BeY+16sPY4hbpAbQvcWwVA7VbCBcq6IJl6oEW/6lz9ZRGuzvLUO4y9gOo7q4AyV61AvSaXAXUKbwbqT64CSooB1Tu23kBLftW5/ssiWwE1dzcDqiqBOjPZZvJKU0AVKafBOwB1HrNdqILJ9UDVzkALftXZ8FHnIlC2VnKAstbbbUYCKKPKR28LoE5v+EDN9C2B6orjy5UB9Z/jYVYAzf+qs+HLInGg5AG9rVYFUL1UEqiB3ABU/9cA1Dw8CtBY048Gms36LSjvfheoXSoBlOs2QG1tpUDJn2irCYEGY3oIUOU20wUalmq6jAPeFCj7w4Hqm3aVjgK6/ssi/BApkR0RF6jZOrpATZ8GQPWkRqC3CXVAOctWoN5qu6XVAVV2ZSKPbQPU9ClbxD7Jle2phawHmvqM6Jq1XxaJA+XwHKC2s1ygKgWUjQP7lw1GK9DbWmwC1AyzLKBuaTVAVQBUdQTaFuFAHVpJoOGY6rX48EBt99wdUDbOCaDkACV7gFI5Y0chUD4OUoCquDgyVewENNwdAGg41XmRyIAqBlR5QJ0yXaBuhQ5QPpxmQfZwX6C2uXmg/GEAbZ+xpbgYUMfc7YE0ULcwt8JWoEowUG6lJ1B7VybQzpehcYGqFFC1Cqg7/6hAY0M6LNDo2iTqy6V4xpbiQqDurHy11gLVymNA7b8OULfI7YFGR9naHB+oU+kHAepvEcMy/Q7fDKgqBOqWwutk67cCaJBwFXRDF4HyJkWBemvv3o3VoCcdB7TzZWgcoHq2JFDyeqgAqJ3ud5EHVLFdbzVQVpWzAgBquqQX0Ck9v7DsgRQLNHzZ6C/KyiZ/Br5uuwINniAcaLTMAYF2/cJyIVAzCADKpuaARrbg9wi052Vo2oAuVuEBZS913fcCYwL1V0EuUG+VumxB+12G5higztxOz0WBerfCCguB6mKWgLqbm2qgPq5dgdqjACFQt5uXUg+052VoAqBLS40HNLKIZKDejcj0DYDmAK4A2vEyNLnmNgJl0727XYEupQ9QOhIomSdmAdCSDipL8Ywtxd0LUDvuhwINigXQ4iSA1iy1LdBw8Tgc9uhCxcVAVRJdE1B/uVhrHKDBzB8UqD3Mv6oS39xqoFSw8x0XKO0FNNzwjg40U1xdJdFBSBUWAM2WfjBQ+45RJlBesz9l6egFgMYL+4hAg/kqgLqzpe6GSxUCTRWfq36DGVuK6wmUeH+VuIlKWHqUl18BVEWbw4Cq0JU3LzmP1ABlC5W1DUDryigUcN9AI9YOBuoe0L4boJV1AKg7jdg9AG3MFsX1BRpXY4tbXHBboIXL+0DD2QC0OMcCLVpIBNCyACiAepMyQEtmy1VVDXShtFhrjgK6WHyu+g1m3K+4ewdatGhk+XVAy8peLHGeHUB5GWuA1mybwhrzRewPNFtarDVdgaaXBNDEzPVs4jXmi9gE6OY9ruJAs7UBaFMZ5UD57fbal0qgxO3K0kYGurAkgOYr3BFoQ2kjAI08SgDKy5AIdKPSegMtrK0z0Fw6AV15lY+6LLzQWa5w+6FvjGSgmSKjlYgHuvYqH3VZDVRcALSigtYZVcM56utSVcZ4QPetpgPQTSrqAnT1VT7qAqAbVrMd0G0rwhZUQgQA3a0iCUBXX+WjLvcDdKcAqMnKq3zUBUArI6IPZADdpTgR/T1SRHQYgCKpiOgwYUBTl/sS0VcfLSN2+shbUOQDBEAR0dkZaObUNwjiBVtQRHQOA4ogRekBdLOL1fTJQFvvgZp6dFurqn9/FujSZKBRH6ipR7e19gvLD53asUEGGvWBmnp0WyurP9G3/EwHZaBRH6ipR7d1pK7KZKBVGaipR7d1pK7KZKBVGaipR7d1RfXse8uiMtCoD9TUo9sKoEdkoKYe3VYAPSIDNfXott4RUOQeA6CI6Iy0s0E+YAAUER0ARUQHQBHRAVBEdAAUER0ARUQHQBHRAVBEdAAUER0ARURnPKDvz7eTk54SZ4E8EX36Pt141TeOSrapSr399sO7cVDK27pvtw4JdO7Bl3hPni69N/2nXi5/3r4c+RuqXFOnX3LffidrbhyV4rZO54077Sd0RKB/+Tp1z/mvf4v15Pxdq5eHS39ON1LnKt8lmaZeN/azy9PhZxoobeu1W3f8de+IQB9eJnqnX/459eQL0fRL0/PXP+YhnreZl6f5/Czf8ble3dTpTOrz1SjMjQHaept5r3YNCfR07cLHl8s/l02ler0gPD/dnvdvv15dGqBH/k4601Sl2OVSBAAtbuv1oZ0yJNDp1fr56/dLT56n3dK00Zx36EpvMi9/b5vSg4EuNXWKJKClbb3s7Pf7yvqQQN+fv112RT9f5mf3adoZmWs42T37/CbpYKBLTb1OEQS0uK2XmXd7aT8kUPX6cNkVqaknXy8v3f/9hfWk2cVfX0d9/vPrsa9Bl5qqlCygxW3d86X9mEDffvvPP75PPXndj785QPWbpNvdIw8vZpo6RRTQ0raqHQ/fjQn0/fnvF3iXnrz22Ynvi8xhpjkHH2ZabOoUUUBL2jrT3K+1YwK97L2nP/NT/fx0ec1ue1IfqD8/PRx8lCnbVCUMaFFbp1cAO/6wd1Cg16NHtxdLn75f3g6xntQfxU3n2z36o85MU6UBLWrr7RDpThkPKPKhAqCI6AAoIjoAiogOgCKiA6CI6AAoIjoAiogOgCKiA6CI6AAoIjoAiogOgCKiA6CI6AAoIjoAiogOgCKiA6CI6AAoIjoAiogOgCKiA6CI6AAoIjoAiogOgCKiA6CI6ABo75x/P/D0ZeMHQDfJyTuN0fWsZa/TmYinMxk98ql2liMvQDJMAHSTBGfRu4q9wHz5/Ofv//3yLTKbCxpJBEA3SRzot+lsmpdd/Is+SSmAVgdAmzOdqvAPvoufJ/zry3wabf0a9DabPn3h2+Xh+TyHO16RYMAAaGtepiuvEQPKJ5yffvnfDFRPZVd4+TbfePsCoekAaGPmU2Kzc726E6YN5YMz1V7hRV/l5ehz14oOgDbmdqk4C9SfMJ3o+dFOvc6ir/Ay3z/2gqLCA6CNefWB+hOmN0mff5ipzhVeLlKvAdBkALQx+S3o7z/ffv1upjpXeDn2Gg9DBEAbc7suk/8a9DZhcvr7T3thxk/fnSu84FBTNgDamumNuPMunk+4vov/39ODncqu8PJ4uyrrC7aj6QBoc9hx0Pky1fzA6PszzW/jzXFQfYUX9aKPg+JN/EIAtHfwZZGmACgiOgCKiA6AIqIDoIjoACgiOgCKiA6AIqIDoIjoACgiOgCKiA6AIqIDoIjoACgiOgCKiA6AIqIDoIjoACgiOgCKiA6AIqIDoIjoACgiOgCKiA6AIqLzf7l5w+wzQJP5AAAAAElFTkSuQmCC" style="display: block; margin: auto;" /></p>
 <p><em>Interpretation:</em> Here we see that the time-series plot of di
 reveals very abrupt fluctuations in di, from low to high values. These
 fluctuations may suggest little evidence of any periods where sustained
@@ -1148,19 +1046,19 @@ previous analysis, I have found it useful to use a temporal window in
 order to smooth out the fine-scale fluctuations in di to get a better
 idea of broader trends. Here I use a 12 hour window in order to re-plot
 the local level di, and view the dynamic changes in di.</p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Smoothed version of local di</span></span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>di.df<span class="sc">$</span>smooth <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="co">#4 fixes/hour x 6 hours on either side of 12 hour centered window</span></span>
-<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="dv">4</span><span class="sc">*</span><span class="dv">6</span> </span>
-<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">dim</span>(di.df)[<span class="dv">1</span>]   <span class="co">#no. of fixes</span></span>
-<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> (w<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(n<span class="dv">-1</span><span class="sc">-</span>w)){</span>
-<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>  di.temp <span class="ot">&lt;-</span> di.df<span class="sc">$</span>di[(i<span class="sc">-</span>w)<span class="sc">:</span>(i<span class="sc">+</span>w)]</span>
-<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>  di.df<span class="sc">$</span>smooth[i] <span class="ot">&lt;-</span> <span class="fu">mean</span>(di.temp,<span class="at">na.rm=</span>T)</span>
-<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(di.df<span class="sc">$</span>date, di.df<span class="sc">$</span>smooth,<span class="at">type=</span><span class="st">&quot;l&quot;</span>)</span></code></pre></div>
-<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a><span class="co">#Smoothed version of local di</span></span>
+<span id="cb37-2"><a href="#cb37-2" tabindex="-1"></a>di.df<span class="sc">$</span>smooth <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb37-3"><a href="#cb37-3" tabindex="-1"></a><span class="co">#4 fixes/hour x 6 hours on either side of 12 hour centered window</span></span>
+<span id="cb37-4"><a href="#cb37-4" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="dv">4</span><span class="sc">*</span><span class="dv">6</span> </span>
+<span id="cb37-5"><a href="#cb37-5" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">dim</span>(di.df)[<span class="dv">1</span>]   <span class="co">#no. of fixes</span></span>
+<span id="cb37-6"><a href="#cb37-6" tabindex="-1"></a></span>
+<span id="cb37-7"><a href="#cb37-7" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> (w<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(n<span class="dv">-1</span><span class="sc">-</span>w)){</span>
+<span id="cb37-8"><a href="#cb37-8" tabindex="-1"></a>  di.temp <span class="ot">&lt;-</span> di.df<span class="sc">$</span>di[(i<span class="sc">-</span>w)<span class="sc">:</span>(i<span class="sc">+</span>w)]</span>
+<span id="cb37-9"><a href="#cb37-9" tabindex="-1"></a>  di.df<span class="sc">$</span>smooth[i] <span class="ot">&lt;-</span> <span class="fu">mean</span>(di.temp,<span class="at">na.rm=</span>T)</span>
+<span id="cb37-10"><a href="#cb37-10" tabindex="-1"></a>  }</span>
+<span id="cb37-11"><a href="#cb37-11" tabindex="-1"></a></span>
+<span id="cb37-12"><a href="#cb37-12" tabindex="-1"></a><span class="fu">plot</span>(di.df<span class="sc">$</span>date, di.df<span class="sc">$</span>smooth,<span class="at">type=</span><span class="st">&quot;l&quot;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
 <p>From the smoothed time-series plot we can again see a similar pattern
 as with Prox, whereby cohesive movement behaviour is strongest between
 mid-day Thursday into early Sunday morning. Within this period there are
